@@ -27,3 +27,7 @@ A política `privacidade.html` informa sobre cookies, personalização de anúnc
 - Metadados: remove os dados que o navegador não replica ao reexportar; não remove marcas d'água incorporadas aos pixels nem garante rótulos de plataformas.
 - Textos: aceita texto colado ou arquivo `.txt`/`.md` de até 1 MB, com limite de 20.000 palavras. Limpa caracteres Unicode invisíveis comuns e normaliza espaços especiais; não reescreve, não detecta autoria e não remove marcas estatísticas baseadas na escolha das palavras.
 - Juntadores importantes para idiomas e emojis são preservados por padrão. Remover controles de direção é uma opção avançada que pode alterar a exibição de idiomas RTL.
+
+## Google Analytics 4
+
+A propriedade do Higienizador IA tem um fluxo da Web para `https://clean-ai.ferramentasgratis.com/`, com ID de medição `G-YXQQQTREZX`. O arquivo `privacy-consent.js` controla a etiqueta em todas as páginas: sem escolha ou após recusa, a etiqueta do Google Analytics não é carregada; a aceitação é registrada localmente por até 180 dias e pode ser revista pelo botão no rodapé. A recusa ou retirada da escolha desativa a medição e tenta remover os cookies `_ga` deste navegador. A configuração do GA4 não envia os conteúdos das imagens ou textos processados.
