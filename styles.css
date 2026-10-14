@@ -66,3 +66,10 @@ input[type="checkbox"]{width:18px;height:18px;flex:0 0 auto}
 
 /* Contraste dos rótulos da vitrine, acima da regra da folha de ferramentas */
 .utility-directory .utility-card .utility-card-kicker{color:#53665b}
+
+
+/* Ajustes finais de contraste na primeira dobra */
+.tool-intro{color:#3e5a4e}
+.format-note span:nth-child(-n+3){color:#3e5a4e;font-size:9px}
+.privacy-chip{padding:6px 10px;border:1px solid #dce5dc;border-radius:999px;background:#fffefa;box-shadow:0 4px 14px rgba(27,66,48,.08)}
+.scene-hill{color:#102a24}
