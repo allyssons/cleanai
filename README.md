@@ -1,24 +1,38 @@
-# LimpaMeta
+# Higienizador IA
 
-Site estático em português para reexportar JPEG, PNG e WebP no próprio navegador, sem enviar os arquivos a um servidor.
+Ferramenta estática em português para higienizar metadados de imagens e caracteres invisíveis em textos. O conteúdo selecionado é processado no navegador; não há API de processamento.
 
-## Executar localmente
+## Rodar localmente
 
-Abra `index.html` em um navegador moderno ou rode um servidor estático na pasta. Não há dependências de build.
+Abra `index.html` num navegador moderno ou use um servidor estático na pasta. Não há etapa de build nem dependências de pacote.
 
-## Publicar no Cloudflare Pages
+## Publicação
 
-1. Crie um projeto Pages apontando para este repositório.
-2. Como o site é estático, deixe o comando de build vazio e defina a pasta de saída como `/` (raiz do projeto).
-3. Após o primeiro deploy, adicione `clean-ai.ferramentasgratis.com` como domínio personalizado nas configurações do projeto Pages.
-4. No Cloudflare DNS, crie/aceite o registro CNAME indicado pelo painel do Pages. Confirme HTTPS ativo antes de divulgar.
+O projeto é publicado no Cloudflare Pages a partir da branch `main` do repositório `allyssons/cleanai`. O projeto Pages está conectado ao domínio `clean-ai.ferramentasgratis.com`; novos commits em `main` acionam o deploy.
 
-## Limitações
+Arquivos de SEO na raiz:
 
-- HEIC/HEIF, TIFF e vídeo não são aceitos.
-- A reexportação via canvas pode recomprimir imagens e alterar levemente qualidade, cor ou tamanho.
-- Remove os metadados do arquivo de saída que o navegador não replica; não remove watermark incorporada aos pixels, como SynthID, e não impede análise visual ou outros sinais de plataforma.
-- Suporte a downloads em lote depende das permissões de download múltiplo do navegador; se o navegador bloquear, baixe os itens individualmente.
-- Imagens acima de 40 megapixels são recusadas para reduzir o risco de falta de memória no aparelho.
+- `robots.txt` permite rastreamento e aponta para `sitemap.xml`.
+- `sitemap.xml` lista a página inicial e as páginas públicas canônicas.
+- As páginas HTML têm títulos, descrições e URLs canônicas próprias.
 
+## Espaços preparados para publicidade
 
+O HTML inclui duas unidades inativas, `data-ad-slot="content-1"` e `data-ad-slot="content-2"`, posicionadas longe dos botões de seleção, limpeza, cópia e download. Elas permanecem ocultas enquanto a publicidade não estiver configurada.
+
+Antes de ativar uma rede de anúncios:
+
+1. Escolha o provedor, crie as unidades e substitua os espaços reservados por seus IDs reais.
+2. Revise `privacidade.html` para nomear fornecedores, cookies/identificadores e opções de desativação pertinentes.
+3. Configure uma CMP certificada e integrada ao TCF antes de servir anúncios personalizados a visitantes do EEE, Reino Unido ou Suíça, se usar Google AdSense/Ad Manager.
+4. Crie `ads.txt` somente com a linha e o publisher ID reais fornecidos pela conta de anúncios. Não publique um ID de exemplo.
+5. Faça a revisão e a aprovação do domínio no painel do provedor antes de considerar os anúncios ativos.
+
+As unidades têm dimensões mínimas definidas em `styles.css` quando exibidas, para reservar espaço e limitar deslocamentos de layout. Não carregue scripts do provedor enquanto os slots estiverem inativos.
+
+## Limites das ferramentas
+
+- Imagens: JPEG, PNG e WebP; reexportação pode recomprimir o JPEG e alterar levemente tamanho, cor ou qualidade. HEIC/HEIF, TIFF e vídeo não são aceitos.
+- Metadados: remove os dados que o navegador não replica ao reexportar; não remove marcas d'água incorporadas aos pixels nem garante rótulos de plataformas.
+- Textos: aceita texto colado ou arquivo `.txt`/`.md` de até 1 MB, com limite de 20.000 palavras. Limpa caracteres Unicode invisíveis comuns e normaliza espaços especiais; não reescreve, não detecta autoria e não remove marcas estatísticas baseadas na escolha das palavras.
+- Juntadores importantes para idiomas e emojis são preservados por padrão. Remover controles de direção é uma opção avançada que pode alterar a exibição de idiomas RTL.
