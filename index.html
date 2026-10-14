@@ -15,7 +15,7 @@
       <span>limpa<span class="brand-accent">meta</span></span>
     </a>
     <nav class="main-nav" aria-label="Navegação principal">
-      <a href="#como-funciona">Como funciona</a><a href="#perguntas">Perguntas</a><a href="#privacidade">Privacidade</a>
+      <a href="#texto">Textos</a><a href="#como-funciona">Como funciona</a><a href="#perguntas">Perguntas</a><a href="#privacidade">Privacidade</a>
     </nav>
     <a class="header-cta" href="#ferramenta">Limpar imagens <span aria-hidden="true">↘</span></a>
   </header>
@@ -26,7 +26,7 @@
         <div class="eyebrow"><span class="eyebrow-dot"></span> PRIVACIDADE PARA SUAS IMAGENS</div>
         <h1>Metadados<br><span>fora da foto.</span></h1>
         <p class="hero-lead">Remova EXIF, localização e credenciais de conteúdo antes de compartilhar. A imagem é processada no seu aparelho e nunca enviada para um servidor.</p>
-        <div class="hero-actions"><a class="button button-primary" href="#ferramenta">Escolher imagens <span aria-hidden="true">↘</span></a><a class="text-link" href="#como-funciona">Entenda como funciona <span aria-hidden="true">→</span></a></div>
+        <div class="hero-actions"><a class="button button-primary" href="#ferramenta">Escolher imagens <span aria-hidden="true">↘</span></a><a class="text-link" href="#texto">Limpar um texto <span aria-hidden="true">→</span></a></div>
         <div class="hero-trust" aria-label="Características do serviço"><span><b aria-hidden="true">✓</b> Sem cadastro</span><span><b aria-hidden="true">✓</b> Sem upload</span><span><b aria-hidden="true">✓</b> Grátis</span></div>
       </div>
       <div class="hero-visual" aria-label="Ilustração de uma foto com os metadados removidos" data-reveal>
@@ -60,6 +60,24 @@
       </div>
     </section>
 
+    <section class="text-section" id="texto">
+      <div class="section-shell">
+        <div class="tool-heading text-heading" data-reveal><div><div class="eyebrow">TAMBÉM PARA SEUS TEXTOS</div><h2>Caracteres escondidos<br><span>fora do texto.</span></h2></div><p class="tool-intro">Identifique caracteres invisíveis e espaços especiais. O texto é analisado e limpo somente neste navegador.</p></div>
+        <div class="text-panel" data-reveal>
+          <div class="text-toolbar"><label for="textFileInput" class="quiet-button file-open">Abrir .txt ou .md</label><input id="textFileInput" type="file" accept=".txt,.md,text/plain,text/markdown" hidden><button class="quiet-button" type="button" id="sampleTextBtn">Usar exemplo</button><button class="quiet-button" type="button" id="clearTextBtn">Limpar campos</button></div>
+          <div class="text-grid">
+            <label class="text-field" for="sourceText"><span>SEU TEXTO <small id="wordCount">0 palavras · até 20.000</small></span><textarea id="sourceText" spellcheck="false" placeholder="Cole ou digite seu texto aqui…" maxlength="250000" aria-describedby="textHelp"></textarea><small id="textHelp">Também pode abrir um arquivo .txt ou .md de até 1 MB.</small></label>
+            <label class="text-field output-field" for="cleanedText"><span>RESULTADO <small id="outputLabel">Aguardando limpeza</small></span><textarea id="cleanedText" readonly placeholder="Seu texto limpo aparecerá aqui…"></textarea><small>As palavras e o sentido são preservados; não reescrevemos o conteúdo.</small></label>
+          </div>
+          <div class="text-findings" id="textFindings" aria-live="polite" hidden></div>
+          <div class="text-options"><label><input id="removeBidi" type="checkbox"><span>Remover controles de direção do texto <small>Avançado: pode afetar a exibição de idiomas escritos da direita para a esquerda.</small></span></label><span class="text-privacy"><span aria-hidden="true">◈</span> Nada é enviado</span></div>
+          <div class="text-actions"><button class="button button-secondary" type="button" id="analyzeTextBtn">Analisar texto <span aria-hidden="true">⌕</span></button><button class="button button-primary" type="button" id="cleanTextBtn">Limpar caracteres <span aria-hidden="true">✳</span></button><div class="text-output-actions"><button class="quiet-button" type="button" id="copyTextBtn" disabled>Copiar resultado</button><button class="quiet-button" type="button" id="downloadTextBtn" disabled>Baixar .txt</button></div></div>
+          <p class="text-status" id="textStatus" role="status" aria-live="polite"></p>
+        </div>
+        <p class="tool-note text-note"><span aria-hidden="true">i</span><span><strong>O que esta limpeza significa:</strong> remove marcas invisíveis comuns, como espaço de largura zero e caracteres de controle, e normaliza espaços especiais. Não detecta autoria, não remove marcas estatísticas por escolha de palavras e não “humaniza” nem reescreve o texto. Juntadores usados por idiomas e emojis são preservados.</span></p>
+      </div>
+    </section>
+
     <section class="how-section section-shell" id="como-funciona">
       <div class="section-kicker" data-reveal><span class="eyebrow">SEM MISTÉRIO</span><h2>O que acontece<br>com a sua imagem?</h2><p>Os dados não são “apagados” do original. Criamos uma cópia nova a partir dos pixels, sem carregar os metadados antigos junto.</p></div>
       <div class="steps" data-reveal>
@@ -88,6 +106,6 @@
   </main>
 
   <footer class="site-footer"><div class="section-shell footer-inner"><a class="brand brand-footer" href="#inicio"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>limpa<span class="brand-accent">meta</span></span></a><span class="footer-note">Privacidade simples, imagem por imagem.</span><a class="footer-top" href="#inicio">Voltar ao topo ↑</a></div></footer>
-  <script src="app.js"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>
