@@ -18,7 +18,7 @@ Arquivos de SEO na raiz:
 
 ## Google AdSense
 
-O código oficial do Google AdSense para anúncios automáticos está no `<head>` das páginas HTML. O publisher ID é `ca-pub-1803254373578705`; a exibição depende de o Google aprovar o site e das configurações de Auto ads na conta. Os espaços manuais `data-ad-slot="content-1"` e `data-ad-slot="content-2"` continuam ocultos e não são unidades do AdSense.
+O código oficial do Google AdSense para anúncios automáticos está no `<head>` da página inicial e dos dois guias de uso. O publisher ID é `ca-pub-1803254373578705`; a exibição depende de o Google aprovar o site e das configurações de Auto ads na conta. Os espaços manuais `data-ad-slot="content-1"` e `data-ad-slot="content-2"` continuam ocultos e não são unidades do AdSense.
 
 A política `privacidade.html` informa sobre cookies, personalização de anúncios e opções de privacidade. A conta do AdSense já mostra o `ads.txt` do domínio principal como autorizado; o arquivo fica na raiz do domínio e não é duplicado neste repositório. Mantenha as mensagens de consentimento e configurações de privacidade do Google atualizadas para as regiões e fornecedores usados.
 ## Limites das ferramentas
