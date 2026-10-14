@@ -58,3 +58,8 @@
 .utility-check,.text-options>label{min-height:44px}
 input[type="checkbox"]{width:18px;height:18px;flex:0 0 auto}
 :focus-visible{outline:3px solid #1e7159;outline-offset:3px}
+
+
+/* Evita contraste baixo durante as entradas animadas e em textos de apoio */
+.is-ready [data-reveal]{opacity:1}
+.utility-card-kicker,.footer-preferences,.inline-preferences{color:#53665b}
