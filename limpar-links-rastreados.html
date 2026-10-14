@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Limpar links rastreados e parâmetros UTM | Higienizador IA</title>
+  <meta name="description" content="Remova parâmetros de rastreamento conhecidos, como UTM e fbclid, de um ou vários links. Revise o resultado no navegador, sem enviar suas URLs.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://clean-ai.ferramentasgratis.com/limpar-links-rastreados">
+  <meta property="og:type" content="website"><meta property="og:locale" content="pt_BR"><meta property="og:site_name" content="Higienizador IA">
+  <meta property="og:title" content="Limpar links rastreados e parâmetros UTM"><meta property="og:description" content="Limpe parâmetros de rastreamento conhecidos e preserve o restante do endereço. Tudo no seu navegador.">
+  <meta property="og:url" content="https://clean-ai.ferramentasgratis.com/limpar-links-rastreados"><meta name="twitter:card" content="summary">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Limpador de links rastreados","url":"https://clean-ai.ferramentasgratis.com/limpar-links-rastreados","inLanguage":"pt-BR","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","description":"Ferramenta grátis para remover parâmetros de rastreamento conhecidos de URLs localmente no navegador.","offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"}}</script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css?v=6">
+  <link rel="stylesheet" href="/tools-extra.css?v=1">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1803254373578705" crossorigin="anonymous"></script>
+  <script src="/limpar-links.js?v=1" defer></script>
+</head>
+<body class="article-page">
+  <header class="site-header"><a class="brand" href="/" aria-label="Higienizador IA — início"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Higienizador <span class="brand-accent">IA</span></span></a><nav class="main-nav" aria-label="Navegação principal"><a href="/#ferramenta">Imagens</a><a href="/#texto">Textos</a><a href="/#ferramentas-documentos">Documentos</a><a href="/#perguntas">Perguntas</a></nav><a class="header-cta" href="/#ferramentas-documentos">Mais ferramentas <span aria-hidden="true">↘</span></a></header>
+  <main class="section-shell article-content utility-page">
+    <nav class="breadcrumbs" aria-label="Você está aqui"><a href="/">Início</a><span aria-hidden="true">/</span><span>Links rastreados</span></nav>
+    <div class="utility-hero"><div class="eyebrow">HIGIENIZADOR DE LINKS</div><h1>Limpar links rastreados</h1><p class="article-lead">Remova parâmetros conhecidos de campanhas e rastreamento, como UTM e fbclid, antes de compartilhar um link. Confira o resultado e mantenha os parâmetros que o destino talvez precise.</p></div>
+    <section class="utility-panel" aria-label="Limpador de links">
+      <div class="utility-panel-head"><div><h2>Limpe um ou vários links</h2><p>Cole um endereço por linha. O processo só remove parâmetros conhecidos.</p></div><span class="utility-lock"><b aria-hidden="true">◈</b> Nada é enviado</span></div>
+      <label class="utility-text-label" for="linkSource"><span>LINKS ORIGINAIS</span><small id="linkCount">0 / 120.000 caracteres</small></label>
+      <textarea class="utility-textarea" id="linkSource" maxlength="120000" placeholder="https://exemplo.com/pagina?utm_source=rede-social&amp;fbclid=abc123&amp;id=42"></textarea>
+      <div class="utility-actions"><button class="button button-primary" type="button" id="cleanLinks">Limpar parâmetros conhecidos <span aria-hidden="true">✳</span></button><button class="quiet-button" type="button" id="linkSample">Usar exemplo</button><button class="quiet-button" type="button" id="clearLinks">Limpar campos</button></div>
+      <label class="utility-text-label" for="linkOutput"><span>RESULTADO PARA REVISÃO</span><small>Parâmetros desconhecidos são preservados</small></label>
+      <textarea class="utility-textarea" id="linkOutput" readonly placeholder="Os links limpos aparecerão aqui…"></textarea>
+      <div class="utility-actions"><button class="button button-secondary" type="button" id="copyLinks" disabled>Copiar resultado</button></div>
+      <p class="utility-status" id="linkStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+    </section>
+    <aside class="utility-notice"><span aria-hidden="true">i</span><span><b>Remoção seletiva:</b> apenas parâmetros conhecidos são removidos. Outros parâmetros podem ser necessários para abrir a página, preservar uma busca ou compartilhar conteúdo específico. Um link limpo ainda pode permitir rastreamento pelo próprio site de destino.</span></aside>
+    <article class="utility-content">
+      <h2>O que são parâmetros de rastreamento?</h2>
+      <p>São partes opcionais que aparecem depois do ponto de interrogação de uma URL. Campanhas de divulgação podem usar campos como <code>utm_source</code> e <code>utm_campaign</code>; plataformas também acrescentam identificadores como <code>fbclid</code> ou <code>gclid</code>. Eles podem ajudar os responsáveis pelo site a entender de onde veio uma visita.</p>
+      <h2>O que esta ferramenta remove</h2>
+      <p>O limpador reconhece nomes UTM e uma lista curta de identificadores conhecidos de campanhas e redes sociais. Ele preserva o domínio, o caminho, a fragmentação e os parâmetros desconhecidos. Isso ajuda a manter parâmetros funcionais, como filtros, idioma ou identificadores que fazem parte da página.</p>
+      <h2>Como revisar os links</h2>
+      <ol><li>Cole uma ou mais URLs HTTP ou HTTPS, uma por linha.</li><li>Clique em limpar e confira quantos parâmetros foram removidos.</li><li>Compare o resultado com o original e teste o endereço se ele for importante.</li><li>Copie apenas os links que você deseja compartilhar.</li></ol>
+      <p>Linhas inválidas, protocolos diferentes de HTTP/HTTPS e endereços que contêm credenciais são mantidos para revisão manual. A ferramenta não abre os links, não visita os destinos e não armazena o texto que você colou.</p>
+      <h2>Dúvidas comuns</h2>
+      <details><summary>O limpador apaga todos os rastreadores?</summary><p>Não. Ele remove nomes conhecidos na lista da ferramenta. Um site ainda pode medir acessos por cookies, conta autenticada, endereço IP ou parâmetros que não removemos.</p></details>
+      <details><summary>Um parâmetro removido pode quebrar o link?</summary><p>Parâmetros conhecidos de rastreamento geralmente servem para atribuição de campanha, mas a ferramenta não pode garantir que todos os destinos funcionem sem eles. Revise o resultado e teste os endereços importantes.</p></details>
+      <details><summary>Os endereços saem do meu dispositivo?</summary><p>Não. A transformação acontece localmente no navegador e os links não são enviados a um serviço de limpeza.</p></details>
+      <p class="article-next">Precisa limpar um arquivo? Veja o <a href="/limpar-metadados-pdf">higienizador de PDF</a> ou o <a href="/limpar-metadados-de-documentos">higienizador de documentos Office</a>.</p>
+    </article>
+  </main>
+  <footer class="site-footer"><div class="section-shell footer-inner"><a class="brand brand-footer" href="/"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Higienizador <span class="brand-accent">IA</span></span></a><a href="/sobre">Sobre</a><a href="/privacidade">Privacidade</a><button class="footer-preferences" type="button" data-open-privacy-settings>Preferências de privacidade</button><a href="/termos">Termos</a></div></footer>
+  <script src="/privacy-consent.js?v=2"></script>
+</body>
+</html>
