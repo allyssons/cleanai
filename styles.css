@@ -63,3 +63,6 @@ input[type="checkbox"]{width:18px;height:18px;flex:0 0 auto}
 /* Evita contraste baixo durante as entradas animadas e em textos de apoio */
 .is-ready [data-reveal]{opacity:1}
 .utility-card-kicker,.footer-preferences,.inline-preferences{color:#53665b}
+
+/* Contraste dos rótulos da vitrine, acima da regra da folha de ferramentas */
+.utility-directory .utility-card .utility-card-kicker{color:#53665b}
