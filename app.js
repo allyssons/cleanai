@@ -144,6 +144,7 @@ function removeItem(id) {
 
 function download(item) {
   if (!item.result) return;
+  window.higienizadorTrack?.('tool_result_downloaded', { tool: 'image' });
   const link = document.createElement('a');
   link.href = item.result.url;
   link.download = item.result.name;
@@ -216,6 +217,7 @@ processBtn.addEventListener('click', async () => {
   }
   delete processBtn.dataset.busy;
   render();
+  if (completed) window.higienizadorTrack?.('tool_clean_completed', { tool: 'image', itemCount: completed });
   if (failed) {
     setStatus(`${completed} imagem(ns) limpa(s). ${failed} não puderam ser processadas; confira o aviso no item.`, 'error');
   } else {
@@ -392,6 +394,7 @@ if (sourceText) {
   analyzeTextBtn.addEventListener('click', () => {
     if (countWords(sourceText.value) > 20000) return updateWordCount();
     updateFindings(sourceText.value);
+    window.higienizadorTrack?.('tool_analysis_completed', { tool: 'text' });
     setTextStatus('Análise concluída. O conteúdo não foi alterado.');
   });
   cleanTextBtn.addEventListener('click', () => {
@@ -404,6 +407,7 @@ if (sourceText) {
     copyTextBtn.disabled = false;
     downloadTextBtn.disabled = false;
     const removed = report.groups.filter(group => !group.action.startsWith('opcional')).reduce((sum, group) => sum + group.count, 0);
+    window.higienizadorTrack?.('tool_clean_completed', { tool: 'text' });
     setTextStatus(removed
       ? `Pronto. ${removed} ocorrência(s) removida(s) ou normalizada(s); palavras e pontuação foram preservadas.`
       : 'Pronto. Não encontramos marcas comuns para remover; o texto foi mantido.');
@@ -411,6 +415,7 @@ if (sourceText) {
   copyTextBtn.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(cleanedText.value);
+      window.higienizadorTrack?.('tool_result_copied', { tool: 'text' });
       setTextStatus('Resultado copiado para a área de transferência.');
     } catch {
       cleanedText.focus();
@@ -426,6 +431,7 @@ if (sourceText) {
     const base = sourceName.replace(/\.(txt|md)$/i, '') || 'texto';
     link.href = url;
     link.download = `${safeName(base)}-limpo.${extension}`;
+    window.higienizadorTrack?.('tool_result_downloaded', { tool: 'text' });
     document.body.append(link);
     link.click();
     link.remove();
@@ -452,6 +458,7 @@ if (sourceText) {
     sourceName = 'texto.txt';
     markOutputStale();
     updateFindings(sourceText.value);
+    window.higienizadorTrack?.('tool_example_loaded', { tool: 'text' });
     setTextStatus('Exemplo carregado. Clique em “Limpar caracteres” para ver o resultado.');
   });
   document.querySelector('#clearTextBtn').addEventListener('click', () => {

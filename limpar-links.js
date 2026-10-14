@@ -88,6 +88,7 @@
     hasOutput = true;
     copyButton.disabled = !output.value;
     updateCount();
+    window.higienizadorTrack?.('tool_clean_completed', { tool: 'links' });
     const summary = changedLinks + ' link(s) alterado(s); ' + removedTotal + ' parâmetro(s) de rastreamento conhecido(s) removido(s).';
     say(warnings.length ? summary + ' ' + warnings.length + ' linha(s) precisam de revisão; veja os endereços mantidos no resultado.' : (urlCount ? summary : 'Não encontramos links para processar.'), warnings.length ? 'warning' : '');
   });
@@ -96,6 +97,7 @@
     if (!hasOutput || !output.value) return;
     try {
       await navigator.clipboard.writeText(output.value);
+      window.higienizadorTrack?.('tool_result_copied', { tool: 'links' });
       say('Links limpos copiados para a área de transferência.');
     } catch {
       output.focus();

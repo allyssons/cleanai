@@ -121,6 +121,7 @@
       if (found.length) for (const label of [...new Set(found)]) addReport(label);
       else addReport('Nenhuma propriedade comum preenchida foi encontrada');
       results.classList.remove('utility-hidden');
+      window.higienizadorTrack?.('tool_analysis_completed', { tool: 'office' });
       clean.disabled = false;
       say(found.length ? found.length + ' campo(s) com valor foram encontrados. Os valores não são exibidos.' : 'Não encontramos propriedades comuns preenchidas; ainda é possível gerar uma cópia regravada.');
     } catch (error) {
@@ -164,6 +165,8 @@
       const link = document.createElement('a');
       link.href = url;
       link.download = currentFile.name.replace(/\.(docx|xlsx|pptx)$/i, '') + '-metadados-limpos.' + currentFile.name.split('.').pop().toLowerCase();
+      window.higienizadorTrack?.('tool_clean_completed', { tool: 'office' });
+      window.higienizadorTrack?.('tool_result_downloaded', { tool: 'office' });
       document.body.append(link);
       link.click();
       link.remove();

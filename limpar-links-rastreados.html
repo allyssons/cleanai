@@ -10,11 +10,12 @@
   <meta property="og:title" content="Limpar links rastreados e parâmetros UTM"><meta property="og:description" content="Limpe parâmetros de rastreamento conhecidos e preserve o restante do endereço. Tudo no seu navegador.">
   <meta property="og:url" content="https://clean-ai.ferramentasgratis.com/limpar-links-rastreados"><meta name="twitter:card" content="summary">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Limpador de links rastreados","url":"https://clean-ai.ferramentasgratis.com/limpar-links-rastreados","inLanguage":"pt-BR","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","description":"Ferramenta grátis para remover parâmetros de rastreamento conhecidos de URLs localmente no navegador.","offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://clean-ai.ferramentasgratis.com/"},{"@type":"ListItem","position":2,"name":"Limpar links rastreados","item":"https://clean-ai.ferramentasgratis.com/limpar-links-rastreados"}]}</script>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/styles.css?v=6">
   <link rel="stylesheet" href="/tools-extra.css?v=1">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1803254373578705" crossorigin="anonymous"></script>
-  <script src="/limpar-links.js?v=1" defer></script>
+  <script src="/limpar-links.js?v=2" defer></script>
 </head>
 <body class="article-page">
   <header class="site-header"><a class="brand" href="/" aria-label="Higienizador IA — início"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Higienizador <span class="brand-accent">IA</span></span></a><nav class="main-nav" aria-label="Navegação principal"><a href="/#ferramenta">Imagens</a><a href="/#texto">Textos</a><a href="/#ferramentas-documentos">Documentos</a><a href="/#perguntas">Perguntas</a></nav><a class="header-cta" href="/#ferramentas-documentos">Mais ferramentas <span aria-hidden="true">↘</span></a></header>
@@ -37,6 +38,8 @@
       <p>São partes opcionais que aparecem depois do ponto de interrogação de uma URL. Campanhas de divulgação podem usar campos como <code>utm_source</code> e <code>utm_campaign</code>; plataformas também acrescentam identificadores como <code>fbclid</code> ou <code>gclid</code>. Eles podem ajudar os responsáveis pelo site a entender de onde veio uma visita.</p>
       <h2>O que esta ferramenta remove</h2>
       <p>O limpador reconhece nomes UTM e uma lista curta de identificadores conhecidos de campanhas e redes sociais. Ele preserva o domínio, o caminho, a fragmentação e os parâmetros desconhecidos. Isso ajuda a manter parâmetros funcionais, como filtros, idioma ou identificadores que fazem parte da página.</p>
+      <h2>Exemplo prático</h2>
+      <p>Um endereço compartilhado pode conter <code>utm_source</code> e <code>fbclid</code> junto com um parâmetro funcional como <code>id=42</code>. O limpador remove os identificadores reconhecidos e mantém o parâmetro desconhecido para revisão; teste o destino antes de enviar se aquele endereço for importante.</p>
       <h2>Como revisar os links</h2>
       <ol><li>Cole uma ou mais URLs HTTP ou HTTPS, uma por linha.</li><li>Clique em limpar e confira quantos parâmetros foram removidos.</li><li>Compare o resultado com o original e teste o endereço se ele for importante.</li><li>Copie apenas os links que você deseja compartilhar.</li></ol>
       <p>Linhas inválidas, protocolos diferentes de HTTP/HTTPS e endereços que contêm credenciais são mantidos para revisão manual. A ferramenta não abre os links, não visita os destinos e não armazena o texto que você colou.</p>
@@ -48,6 +51,6 @@
     </article>
   </main>
   <footer class="site-footer"><div class="section-shell footer-inner"><a class="brand brand-footer" href="/"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Higienizador <span class="brand-accent">IA</span></span></a><a href="/sobre">Sobre</a><a href="/privacidade">Privacidade</a><button class="footer-preferences" type="button" data-open-privacy-settings>Preferências de privacidade</button><a href="/termos">Termos</a></div></footer>
-  <script src="/privacy-consent.js?v=2"></script>
+  <script src="/privacy-consent.js?v=3"></script>
 </body>
 </html>

@@ -101,6 +101,7 @@
         fieldList.append(item);
       }
       results.classList.remove('utility-hidden');
+      window.higienizadorTrack?.('tool_analysis_completed', { tool: 'pdf' });
       clean.dataset.infoCount = String(found.length);
       say(found.length ? found.length + ' campo(s) comum(ns) preenchido(s) encontrado(s). Os valores não são mostrados.' : 'Não encontramos campos comuns preenchidos; ainda é possível gerar uma cópia regravada.', '');
     } catch (error) {
@@ -133,6 +134,8 @@
       const link = document.createElement('a');
       link.href = url;
       link.download = currentFile.name.replace(/\.pdf$/i, '') + '-metadados-limpos.pdf';
+      window.higienizadorTrack?.('tool_clean_completed', { tool: 'pdf' });
+      window.higienizadorTrack?.('tool_result_downloaded', { tool: 'pdf' });
       document.body.append(link);
       link.click();
       link.remove();

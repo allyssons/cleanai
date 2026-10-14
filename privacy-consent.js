@@ -70,6 +70,23 @@
     removeAnalyticsCookies();
   }
 
+  const trackedEvents = new Set([
+    'tool_analysis_completed',
+    'tool_clean_completed',
+    'tool_result_copied',
+    'tool_result_downloaded',
+    'tool_example_loaded'
+  ]);
+  const trackedTools = new Set(['image', 'text', 'pdf', 'office', 'links']);
+
+  window.higienizadorTrack = function (eventName, details = {}) {
+    if (!trackedEvents.has(eventName) || !trackedTools.has(details.tool)) return;
+    if (readConsent() !== 'accepted' || !window.__higienizadorGaLoaded || typeof window.gtag !== 'function') return;
+    const params = { tool: details.tool };
+    if (Number.isInteger(details.itemCount)) params.item_count = Math.max(1, Math.min(20, details.itemCount));
+    window.gtag('event', eventName, params);
+  };
+
   const banner = document.createElement('aside');
   banner.className = 'analytics-consent';
   banner.hidden = true;
