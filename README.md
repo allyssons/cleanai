@@ -16,20 +16,11 @@ Arquivos de SEO na raiz:
 - `sitemap.xml` lista a página inicial e as páginas públicas canônicas.
 - As páginas HTML têm títulos, descrições e URLs canônicas próprias.
 
-## Espaços preparados para publicidade
+## Google AdSense
 
-O HTML inclui duas unidades inativas, `data-ad-slot="content-1"` e `data-ad-slot="content-2"`, posicionadas longe dos botões de seleção, limpeza, cópia e download. Elas permanecem ocultas enquanto a publicidade não estiver configurada.
+O código oficial do Google AdSense para anúncios automáticos está no `<head>` das páginas HTML. O publisher ID é `ca-pub-1803254373578705`; a exibição depende de o Google aprovar o site e das configurações de Auto ads na conta. Os espaços manuais `data-ad-slot="content-1"` e `data-ad-slot="content-2"` continuam ocultos e não são unidades do AdSense.
 
-Antes de ativar uma rede de anúncios:
-
-1. Escolha o provedor, crie as unidades e substitua os espaços reservados por seus IDs reais.
-2. Revise `privacidade.html` para nomear fornecedores, cookies/identificadores e opções de desativação pertinentes.
-3. Configure uma CMP certificada e integrada ao TCF antes de servir anúncios personalizados a visitantes do EEE, Reino Unido ou Suíça, se usar Google AdSense/Ad Manager.
-4. Crie `ads.txt` somente com a linha e o publisher ID reais fornecidos pela conta de anúncios. Não publique um ID de exemplo.
-5. Faça a revisão e a aprovação do domínio no painel do provedor antes de considerar os anúncios ativos.
-
-As unidades têm dimensões mínimas definidas em `styles.css` quando exibidas, para reservar espaço e limitar deslocamentos de layout. Não carregue scripts do provedor enquanto os slots estiverem inativos.
-
+A política `privacidade.html` informa sobre cookies, personalização de anúncios e opções de privacidade. A conta do AdSense já mostra o `ads.txt` do domínio principal como autorizado; o arquivo fica na raiz do domínio e não é duplicado neste repositório. Mantenha as mensagens de consentimento e configurações de privacidade do Google atualizadas para as regiões e fornecedores usados.
 ## Limites das ferramentas
 
 - Imagens: JPEG, PNG e WebP; reexportação pode recomprimir o JPEG e alterar levemente tamanho, cor ou qualidade. HEIC/HEIF, TIFF e vídeo não são aceitos.
