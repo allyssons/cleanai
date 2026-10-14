@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Remover metadados de PDF grátis | Higienizador IA</title>
+  <meta name="description" content="Veja e remova campos comuns de metadados de PDF, como autor, título, datas e programa de origem. Limpeza local no navegador, sem upload.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://clean-ai.ferramentasgratis.com/limpar-metadados-pdf">
+  <meta property="og:type" content="website"><meta property="og:locale" content="pt_BR"><meta property="og:site_name" content="Higienizador IA">
+  <meta property="og:title" content="Remover metadados de PDF grátis"><meta property="og:description" content="Confira e limpe propriedades comuns de PDFs no navegador, sem enviar seu documento.">
+  <meta property="og:url" content="https://clean-ai.ferramentasgratis.com/limpar-metadados-pdf"><meta name="twitter:card" content="summary">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Higienizador de PDF","url":"https://clean-ai.ferramentasgratis.com/limpar-metadados-pdf","inLanguage":"pt-BR","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","description":"Ferramenta grátis para limpar propriedades comuns de metadados de PDFs localmente no navegador.","offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"}}</script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css?v=6">
+  <link rel="stylesheet" href="/tools-extra.css?v=1">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1803254373578705" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" defer crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="/limpar-pdf.js?v=1" defer></script>
+</head>
+<body class="article-page">
+  <header class="site-header"><a class="brand" href="/" aria-label="Higienizador IA — início"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Higienizador <span class="brand-accent">IA</span></span></a><nav class="main-nav" aria-label="Navegação principal"><a href="/#ferramenta">Imagens</a><a href="/#texto">Textos</a><a href="/#ferramentas-documentos">Documentos</a><a href="/#perguntas">Perguntas</a></nav><a class="header-cta" href="/#ferramentas-documentos">Mais ferramentas <span aria-hidden="true">↘</span></a></header>
+  <main class="section-shell article-content utility-page">
+    <nav class="breadcrumbs" aria-label="Você está aqui"><a href="/">Início</a><span aria-hidden="true">/</span><span>Metadados de PDF</span></nav>
+    <div class="utility-hero"><div class="eyebrow">HIGIENIZADOR DE DOCUMENTOS</div><h1>Remover metadados de PDF</h1><p class="article-lead">Confira e limpe propriedades comuns de um PDF, como autor, título, datas e programa de origem. O processamento acontece no seu navegador; seu arquivo não é enviado para limpeza.</p></div>
+    <section class="utility-panel" aria-label="Higienizador de PDF">
+      <div class="utility-panel-head"><div><h2>Analise uma cópia local</h2><p>Um PDF por vez · até 30 MB · o original fica intacto</p></div><span class="utility-lock"><b aria-hidden="true">◈</b> Processado no aparelho</span></div>
+      <div class="utility-dropzone"><strong>Escolha o PDF que quer revisar</strong><p>O arquivo será aberto apenas nesta página para ler e remover campos comuns de metadados.</p><button class="button button-secondary" type="button" id="pdfChoose">Escolher PDF</button><input id="pdfFile" type="file" accept=".pdf,application/pdf" hidden></div>
+      <div class="utility-selected utility-hidden" id="pdfSelected"><div><strong id="pdfFileName"></strong><small id="pdfFileSize"></small></div><button class="quiet-button" type="button" id="pdfReset">Remover arquivo</button></div>
+      <div class="utility-actions"><button class="button button-secondary" type="button" id="pdfAnalyze" disabled>Ver campos comuns <span aria-hidden="true">⌕</span></button><button class="button button-primary" type="button" id="pdfClean" disabled>Baixar PDF limpo <span aria-hidden="true">↓</span></button></div>
+      <label class="utility-check"><input type="checkbox" id="pdfSignedAck"><span>Entendo que regravar um PDF pode invalidar assinaturas digitais. Não vou usar esta cópia como documento assinado ou certificado.</span></label>
+      <div class="utility-results utility-hidden" id="pdfResults"><h3>Campos comuns encontrados</h3><p>Mostramos apenas os tipos de campos, sem exibir seus valores.</p><ul id="pdfFields"></ul></div>
+      <p class="utility-status" id="pdfStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+    </section>
+    <aside class="utility-notice"><span aria-hidden="true">i</span><span><b>Limpeza com limites claros:</b> esta ferramenta remove campos do dicionário de informações do PDF e o pacote XMP da raiz quando reconhecido. Ela não remove dados que estejam no conteúdo visível, formulários, comentários, anexos, marcas d’água ou outros dados internos. PDFs protegidos por senha não são compatíveis.</span></aside>
+    <article class="utility-content">
+      <h2>O que são metadados de um PDF?</h2>
+      <p>Um PDF pode guardar uma ficha com título, autor, assunto, palavras-chave, aplicativo de criação, produtor e datas. Alguns arquivos também incluem um pacote XMP no catálogo do documento. Esses campos podem continuar presentes mesmo quando não aparecem nas páginas que você lê ou imprime.</p>
+      <h2>Como usar o higienizador</h2>
+      <ol><li>Escolha um arquivo PDF de até 30 MB.</li><li>Use “Ver campos comuns” para conferir os tipos de informação presentes.</li><li>Marque a confirmação sobre assinaturas digitais e baixe a nova cópia.</li><li>Abra e confira o resultado no seu leitor de PDF antes de compartilhar.</li></ol>
+      <p>A ferramenta lê e regrava o arquivo localmente com pdf-lib. O PDF original não é alterado. O arquivo processado pode ficar maior ou apresentar diferenças de compatibilidade em leitores antigos; guarde o original e revise a cópia.</p>
+      <h2>Quando não usar</h2>
+      <p>Não use a cópia gerada para substituir um PDF assinado digitalmente, certificado ou que precise manter validade formal: regravar um documento costuma invalidar assinaturas. Também não é uma ferramenta de redação ou anonimização. Texto, imagens, campos de formulário, comentários e anexos podem continuar contendo dados pessoais.</p>
+      <h2>Dúvidas comuns</h2>
+      <details><summary>O PDF é enviado para algum servidor?</summary><p>Não. A leitura e a limpeza acontecem no navegador. O script da biblioteca é carregado de uma CDN, mas o arquivo escolhido não é enviado a ela.</p></details>
+      <details><summary>Ela remove todos os dados ocultos?</summary><p>Não. A ferramenta atua em campos comuns da ficha do documento e no XMP ligado ao catálogo principal. Estruturas internas, anexos, comentários, formulário, texto e informações embutidas em imagens podem permanecer.</p></details>
+      <details><summary>Por que meu PDF protegido não abre?</summary><p>A biblioteca não edita arquivos criptografados ou protegidos por senha. Remova a proteção em um aplicativo confiável apenas se você tiver autorização e tente novamente.</p></details>
+      <p class="article-next">Explore também o <a href="/limpar-metadados-de-documentos">higienizador de arquivos Word, Excel e PowerPoint</a> e o <a href="/limpar-links-rastreados">limpador de links rastreados</a>.</p>
+    </article>
+  </main>
+  <footer class="site-footer"><div class="section-shell footer-inner"><a class="brand brand-footer" href="/"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Higienizador <span class="brand-accent">IA</span></span></a><a href="/sobre">Sobre</a><a href="/privacidade">Privacidade</a><button class="footer-preferences" type="button" data-open-privacy-settings>Preferências de privacidade</button><a href="/termos">Termos</a></div></footer>
+  <script src="/privacy-consent.js?v=2"></script>
+</body>
+</html>
