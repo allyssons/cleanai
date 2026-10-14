@@ -275,3 +275,196 @@ if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-mot
   }, { threshold: 0.12, rootMargin: '0px 0px -28px 0px' });
   document.querySelectorAll('[data-reveal]').forEach(element => observer.observe(element));
 }
+
+// Text cleanup only normalizes common hidden formatting marks; it never rewrites prose.
+const sourceText = document.querySelector('#sourceText');
+if (sourceText) {
+  const cleanedText = document.querySelector('#cleanedText');
+  const wordCount = document.querySelector('#wordCount');
+  const outputLabel = document.querySelector('#outputLabel');
+  const findings = document.querySelector('#textFindings');
+  const textStatus = document.querySelector('#textStatus');
+  const analyzeTextBtn = document.querySelector('#analyzeTextBtn');
+  const cleanTextBtn = document.querySelector('#cleanTextBtn');
+  const copyTextBtn = document.querySelector('#copyTextBtn');
+  const downloadTextBtn = document.querySelector('#downloadTextBtn');
+  const textFileInput = document.querySelector('#textFileInput');
+  const removeBidi = document.querySelector('#removeBidi');
+  const bidiMarks = new Set(['\u061c', '\u200e', '\u200f', '\u202a', '\u202b', '\u202c', '\u202d', '\u202e', '\u2066', '\u2067', '\u2068', '\u2069']);
+  const removeMarks = new Set(['\u00ad', '\u200b', '\u2060', '\ufeff']);
+  const specialSpaces = /[\u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]/u;
+  const tagMark = /[\u{e0000}-\u{e007f}]/u;
+  const controlMark = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f]/u;
+  let sourceName = 'texto.txt';
+
+  function countWords(value) {
+    const trimmed = value.trim();
+    return trimmed ? trimmed.split(/\s+/u).length : 0;
+  }
+
+  function classifyChar(char) {
+    if (specialSpaces.test(char)) return { group: 'Espaços especiais', action: 'normalizado para espaço comum', code: char.codePointAt(0) };
+    if (removeMarks.has(char)) return { group: 'Marcas invisíveis', action: 'removida', code: char.codePointAt(0) };
+    if (tagMark.test(char)) return { group: 'Caracteres de tag invisíveis', action: 'removido', code: char.codePointAt(0) };
+    if (controlMark.test(char)) return { group: 'Caracteres de controle', action: 'removido', code: char.codePointAt(0) };
+    if (bidiMarks.has(char)) return { group: 'Controles de direção', action: 'opcional — mantido por padrão', code: char.codePointAt(0) };
+    return null;
+  }
+
+  function scanText(value) {
+    const groups = new Map();
+    let total = 0;
+    for (const char of value) {
+      const match = classifyChar(char);
+      if (!match) continue;
+      total++;
+      const key = `${match.group}|${match.action}`;
+      const current = groups.get(key) || { ...match, count: 0, codes: new Set() };
+      current.count++;
+      current.codes.add(match.code.toString(16).toUpperCase().padStart(4, '0'));
+      groups.set(key, current);
+    }
+    return { total, groups: [...groups.values()] };
+  }
+
+  function updateFindings(value) {
+    const report = scanText(value);
+    findings.replaceChildren();
+    findings.hidden = false;
+    const summary = document.createElement('strong');
+    summary.textContent = report.total
+      ? `${report.total} ocorrência(s) encontrada(s) em ${report.groups.length} grupo(s). Revise antes de limpar:`
+      : 'Nenhum dos caracteres invisíveis comuns que verificamos foi encontrado.';
+    findings.append(summary);
+    if (report.groups.length) {
+      const chips = document.createElement('div');
+      chips.className = 'finding-list';
+      for (const group of report.groups.slice(0, 8)) {
+        const chip = document.createElement('span');
+        chip.className = 'finding-chip';
+        chip.textContent = `${group.group}: `;
+        const amount = document.createElement('b');
+        amount.textContent = group.count;
+        chip.append(amount, document.createTextNode(` · U+${[...group.codes].slice(0, 3).join(', U+')}`));
+        chips.append(chip);
+      }
+      findings.append(chips);
+    }
+    return report;
+  }
+
+  function cleanSource(value) {
+    let output = '';
+    for (const char of value) {
+      if (specialSpaces.test(char)) output += ' ';
+      else if (removeMarks.has(char) || tagMark.test(char) || controlMark.test(char)) continue;
+      else if (removeBidi.checked && bidiMarks.has(char)) continue;
+      else output += char;
+    }
+    return output;
+  }
+
+  function setTextStatus(message, tone = 'success') {
+    textStatus.textContent = message;
+    textStatus.dataset.tone = tone;
+  }
+
+  function updateWordCount() {
+    const words = countWords(sourceText.value);
+    wordCount.textContent = `${words.toLocaleString('pt-BR')} palavras · até 20.000`;
+    const tooLong = words > 20000;
+    analyzeTextBtn.disabled = tooLong;
+    cleanTextBtn.disabled = tooLong;
+    if (tooLong) setTextStatus('O limite é de 20.000 palavras. Reduza o texto para continuar.', 'error');
+  }
+
+  function markOutputStale() {
+    cleanedText.value = '';
+    outputLabel.textContent = 'Aguardando limpeza';
+    copyTextBtn.disabled = true;
+    downloadTextBtn.disabled = true;
+    if (!findings.hidden) findings.hidden = true;
+    setTextStatus('');
+    updateWordCount();
+  }
+
+  sourceText.addEventListener('input', markOutputStale);
+  analyzeTextBtn.addEventListener('click', () => {
+    if (countWords(sourceText.value) > 20000) return updateWordCount();
+    updateFindings(sourceText.value);
+    setTextStatus('Análise concluída. O conteúdo não foi alterado.');
+  });
+  cleanTextBtn.addEventListener('click', () => {
+    const words = countWords(sourceText.value);
+    if (!sourceText.value.trim()) return setTextStatus('Cole ou digite um texto antes de limpar.', 'error');
+    if (words > 20000) return updateWordCount();
+    const report = updateFindings(sourceText.value);
+    cleanedText.value = cleanSource(sourceText.value);
+    outputLabel.textContent = 'Resultado pronto';
+    copyTextBtn.disabled = false;
+    downloadTextBtn.disabled = false;
+    const removed = report.groups.filter(group => !group.action.startsWith('opcional')).reduce((sum, group) => sum + group.count, 0);
+    setTextStatus(removed
+      ? `Pronto. ${removed} ocorrência(s) removida(s) ou normalizada(s); palavras e pontuação foram preservadas.`
+      : 'Pronto. Não encontramos marcas comuns para remover; o texto foi mantido.');
+  });
+  copyTextBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(cleanedText.value);
+      setTextStatus('Resultado copiado para a área de transferência.');
+    } catch {
+      cleanedText.focus();
+      cleanedText.select();
+      setTextStatus('Não foi possível copiar automaticamente. O resultado está selecionado para você copiar.', 'error');
+    }
+  });
+  downloadTextBtn.addEventListener('click', () => {
+    const blob = new Blob([cleanedText.value], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const extension = /\.md$/i.test(sourceName) ? 'md' : 'txt';
+    const base = sourceName.replace(/\.(txt|md)$/i, '') || 'texto';
+    link.href = url;
+    link.download = `${safeName(base)}-limpo.${extension}`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  });
+  textFileInput.addEventListener('change', async () => {
+    const file = textFileInput.files?.[0];
+    textFileInput.value = '';
+    if (!file) return;
+    if (file.size > 1024 * 1024) return setTextStatus('O arquivo pode ter no máximo 1 MB.', 'error');
+    if (!/\.(txt|md)$/i.test(file.name)) return setTextStatus('Escolha um arquivo .txt ou .md.', 'error');
+    try {
+      sourceText.value = await file.text();
+      sourceName = file.name;
+      markOutputStale();
+      setTextStatus(`Arquivo “${file.name}” aberto localmente.`);
+      if (countWords(sourceText.value) > 20000) updateWordCount();
+    } catch {
+      setTextStatus('Não foi possível ler o arquivo. Tente outro arquivo de texto UTF-8.', 'error');
+    }
+  });
+  document.querySelector('#sampleTextBtn').addEventListener('click', () => {
+    sourceText.value = 'Texto de exemplo com um espaço especial e uma marca invisível​.';
+    sourceName = 'texto.txt';
+    markOutputStale();
+    updateFindings(sourceText.value);
+    setTextStatus('Exemplo carregado. Clique em “Limpar caracteres” para ver o resultado.');
+  });
+  document.querySelector('#clearTextBtn').addEventListener('click', () => {
+    sourceText.value = '';
+    cleanedText.value = '';
+    sourceName = 'texto.txt';
+    findings.hidden = true;
+    outputLabel.textContent = 'Aguardando limpeza';
+    copyTextBtn.disabled = true;
+    downloadTextBtn.disabled = true;
+    setTextStatus('');
+    updateWordCount();
+    sourceText.focus();
+  });
+  updateWordCount();
+}
