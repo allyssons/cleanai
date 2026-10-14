@@ -15,6 +15,27 @@
   const MAX_SIZE = 30 * 1024 * 1024;
   let currentFile = null;
   let busy = false;
+  let pdfLibraryPromise = null;
+
+  function ensurePdfLibrary() {
+    if (window.PDFLib) return Promise.resolve();
+    if (!pdfLibraryPromise) {
+      pdfLibraryPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        script.referrerPolicy = 'no-referrer';
+        script.onload = () => window.PDFLib ? resolve() : reject(new Error('PDFLib indisponível'));
+        script.onerror = () => reject(new Error('Falha ao carregar PDFLib'));
+        document.head.append(script);
+      }).catch(error => {
+        pdfLibraryPromise = null;
+        throw error;
+      });
+    }
+    return pdfLibraryPromise;
+  }
 
   const labels = [
     ['Título', doc => doc.getTitle()],
@@ -81,10 +102,11 @@
 
   analyze.addEventListener('click', async () => {
     if (!currentFile) return;
-    if (!window.PDFLib) { say('A biblioteca de PDF não carregou. Confira sua conexão e tente novamente.', 'error'); return; }
     setBusy(true);
-    say('Lendo os campos de metadados localmente…', 'busy');
+    say('Carregando a ferramenta de PDF pela primeira vez…', 'busy');
     try {
+      await ensurePdfLibrary();
+      say('Lendo os campos de metadados localmente…', 'busy');
       const bytes = await currentFile.arrayBuffer();
       const doc = await PDFLib.PDFDocument.load(bytes, { updateMetadata: false });
       const found = labels.filter(([, getter]) => readField(doc, getter));
@@ -106,17 +128,21 @@
       say(found.length ? found.length + ' campo(s) comum(ns) preenchido(s) encontrado(s). Os valores não são mostrados.' : 'Não encontramos campos comuns preenchidos; ainda é possível gerar uma cópia regravada.', '');
     } catch (error) {
       results.classList.add('utility-hidden');
-      say('Não foi possível ler este PDF. Arquivos protegidos por senha, danificados ou com estruturas não compatíveis não podem ser processados.', 'error');
+      say(window.PDFLib
+        ? 'Não foi possível ler este PDF. Arquivos protegidos por senha, danificados ou com estruturas não compatíveis não podem ser processados.'
+        : 'A biblioteca de PDF não carregou. Confira sua conexão e tente novamente.', 'error');
     } finally {
       setBusy(false);
     }
   });
 
   clean.addEventListener('click', async () => {
-    if (!currentFile || !acknowledgement.checked || !window.PDFLib) return;
+    if (!currentFile || !acknowledgement.checked) return;
     setBusy(true);
-    say('Criando uma cópia limpa no seu navegador…', 'busy');
+    say('Carregando a ferramenta de PDF pela primeira vez…', 'busy');
     try {
+      await ensurePdfLibrary();
+      say('Criando uma cópia limpa no seu navegador…', 'busy');
       const bytes = await currentFile.arrayBuffer();
       const doc = await PDFLib.PDFDocument.load(bytes, { updateMetadata: false });
       const infoRef = doc.context && doc.context.trailerInfo && doc.context.trailerInfo.Info;
@@ -142,7 +168,9 @@
       window.setTimeout(() => URL.revokeObjectURL(url), 30000);
       say('Cópia criada e baixada. ' + removed + ' entrada(s) comum(ns) de metadados foram removidas; o original ficou intacto.');
     } catch (error) {
-      say('Não foi possível gerar esta cópia. O arquivo original permanece intacto; tente outro PDF sem senha.', 'error');
+      say(window.PDFLib
+        ? 'Não foi possível gerar esta cópia. O arquivo original permanece intacto; tente outro PDF sem senha.'
+        : 'A biblioteca de PDF não carregou. O arquivo original permanece intacto; confira sua conexão e tente novamente.', 'error');
     } finally {
       setBusy(false);
     }

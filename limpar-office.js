@@ -27,6 +27,27 @@
   let currentFile = null;
   let currentZip = null;
   let isBusy = false;
+  let officeLibraryPromise = null;
+
+  function ensureOfficeLibrary() {
+    if (window.JSZip) return Promise.resolve();
+    if (!officeLibraryPromise) {
+      officeLibraryPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/jszip@3.10.2/dist/jszip.min.js';
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        script.referrerPolicy = 'no-referrer';
+        script.onload = () => window.JSZip ? resolve() : reject(new Error('JSZip indisponível'));
+        script.onerror = () => reject(new Error('Falha ao carregar JSZip'));
+        document.head.append(script);
+      }).catch(error => {
+        officeLibraryPromise = null;
+        throw error;
+      });
+    }
+    return officeLibraryPromise;
+  }
 
   const formatBytes = bytes => bytes < 1048576 ? Math.max(1, Math.round(bytes / 1024)) + ' KB' : (bytes / 1048576).toFixed(1) + ' MB';
   const say = (message, state = '') => { status.textContent = message; status.dataset.state = state; };
@@ -91,10 +112,11 @@
 
   analyze.addEventListener('click', async () => {
     if (!currentFile) return;
-    if (!window.JSZip) { say('A biblioteca de documentos não carregou. Confira sua conexão e tente novamente.', 'error'); return; }
     setBusy(true);
-    say('Lendo as propriedades localmente no navegador…', 'busy');
+    say('Carregando a ferramenta de documentos pela primeira vez…', 'busy');
     try {
+      await ensureOfficeLibrary();
+      say('Lendo as propriedades localmente no navegador…', 'busy');
       const zip = await JSZip.loadAsync(await currentFile.arrayBuffer(), { checkCRC32: false });
       if (isSigned(zip)) {
         currentZip = null;
@@ -127,7 +149,9 @@
     } catch (error) {
       currentZip = null;
       clearResults();
-      say('Não foi possível abrir este documento. Ele pode estar danificado, protegido ou usar uma estrutura incompatível.', 'error');
+      say(window.JSZip
+        ? 'Não foi possível abrir este documento. Ele pode estar danificado, protegido ou usar uma estrutura incompatível.'
+        : 'A biblioteca de documentos não carregou. Confira sua conexão e tente novamente.', 'error');
     } finally {
       setBusy(false);
     }
