@@ -39,7 +39,8 @@
     window.gtag('js', new Date());
     window.gtag('config', measurementId, {
       allow_google_signals: false,
-      allow_ad_personalization_signals: false
+      allow_ad_personalization_signals: false,
+      cookie_domain: 'none'
     });
 
     const script = document.createElement('script');
@@ -52,10 +53,8 @@
 
   function removeAnalyticsCookies() {
     const names = document.cookie.split(';').map(part => part.trim().split('=')[0]);
-    const domains = [null, window.location.hostname];
-    if (window.location.hostname.endsWith('.ferramentasgratis.com')) {
-      domains.push('ferramentasgratis.com', '.ferramentasgratis.com');
-    }
+    // Keep this subdomain's analytics cookies separate from the root site.
+    const domains = [null];
 
     names.filter(name => name === '_ga' || name.startsWith('_ga_')).forEach(name => {
       domains.forEach(domain => {

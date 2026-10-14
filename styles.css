@@ -33,13 +33,13 @@
 .analytics-consent__copy{max-width:680px}
 .analytics-consent__eyebrow{color:#c5e8b1;font-size:8px;font-weight:800;letter-spacing:1.5px}
 .analytics-consent__copy h2{margin:7px 0 6px;color:#fffefa;font-size:19px;letter-spacing:-.035em}
-.analytics-consent__copy p{margin:0;color:#c5d5c9;font-size:11px;line-height:1.65}
+.analytics-consent__copy p{margin:0;color:#c5d5c9;font-size:12px;line-height:1.65}
 .analytics-consent__copy a{color:#d6f28b;text-underline-offset:3px}
 .analytics-consent__actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
-.analytics-consent__button{min-height:42px;padding:0 15px;border:1px solid rgba(234,246,230,.26);border-radius:8px;background:transparent;color:#f8fbf5;font:700 10px var(--sans);cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease}
+.analytics-consent__button{min-height:42px;padding:0 15px;border:1px solid rgba(234,246,230,.26);border-radius:8px;background:transparent;color:#f8fbf5;font:700 11px var(--sans);cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease}
 .analytics-consent__button:hover{transform:translateY(-1px);border-color:#c9f27c}
 .analytics-consent__button--accept{border-color:#c9f27c;background:#c9f27c;color:#214b37}
 .analytics-consent__button--accept:hover{background:#d7f69b}
 .analytics-consent__button:focus-visible,.footer-preferences:focus-visible,.inline-preferences:focus-visible{outline:3px solid #86bd72;outline-offset:3px}
-@media(max-width:760px){.analytics-consent{left:10px;right:10px;bottom:10px;width:calc(100% - 20px);grid-template-columns:1fr;gap:15px;padding:18px;border-radius:13px}.analytics-consent__copy h2{font-size:17px}.analytics-consent__copy p{font-size:10px}.analytics-consent__actions{justify-content:stretch}.analytics-consent__button{flex:1;padding:0 9px;font-size:9px}.footer-preferences{font-size:8px}}
+@media(max-width:760px){.analytics-consent{left:10px;right:10px;bottom:10px;width:calc(100% - 20px);grid-template-columns:1fr;gap:15px;padding:18px;border-radius:13px}.analytics-consent__copy h2{font-size:17px}.analytics-consent__copy p{font-size:12px}.analytics-consent__actions{justify-content:stretch}.analytics-consent__button{flex:1;padding:0 9px;font-size:11px}.footer-preferences{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.analytics-consent{transition:none}.analytics-consent.is-visible{animation:none}.analytics-consent__button{transition:none}}
