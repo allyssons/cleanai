@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://clean-ai.ferramentasgratis.com/sitemap.xml
+Sitemap: https://ferramentasgratis.com/sitemap.xml
