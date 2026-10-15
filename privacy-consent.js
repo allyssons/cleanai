@@ -53,7 +53,7 @@
 
   function removeAnalyticsCookies() {
     const names = document.cookie.split(';').map(part => part.trim().split('=')[0]);
-    // Keep this subdomain's analytics cookies separate from the root site.
+    // Remove analytics cookies from the current page host when consent is withdrawn.
     const domains = [null];
 
     names.filter(name => name === '_ga' || name.startsWith('_ga_')).forEach(name => {
