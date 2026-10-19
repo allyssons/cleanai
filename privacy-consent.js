@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  const isEnglish = document.documentElement.lang === 'en';
   const measurementId = 'G-YXQQQTREZX';
   const storageKey = 'higienizador-ia:analytics-consent:v1';
   const consentLifetime = 180 * 24 * 60 * 60 * 1000;
@@ -77,7 +78,7 @@
     'tool_result_downloaded',
     'tool_example_loaded'
   ]);
-  const trackedTools = new Set(['image', 'text', 'pdf', 'office', 'links']);
+  const trackedTools = new Set(['image', 'text', 'pdf', 'office', 'links', 'video']);
 
   window.higienizadorTrack = function (eventName, details = {}) {
     if (!trackedEvents.has(eventName) || !trackedTools.has(details.tool)) return;
@@ -92,7 +93,17 @@
   banner.hidden = true;
   banner.setAttribute('aria-labelledby', 'analytics-consent-title');
   banner.setAttribute('aria-live', 'polite');
-  banner.innerHTML = '<div class="analytics-consent__copy">' +
+  if (isEnglish) {
+    banner.innerHTML = '<div class="analytics-consent__copy">' +
+      '<span class="analytics-consent__eyebrow">PRIVACY</span>' +
+      '<h2 id="analytics-consent-title">You choose whether to share analytics</h2>' +
+      '<p>Google Analytics helps us understand visits and how the pages are used. Measurement starts only if you accept. This choice is separate from Google advertising settings. <a href="/en/privacy/">Learn more</a>.</p>' +
+      '</div><div class="analytics-consent__actions">' +
+      '<button class="analytics-consent__button analytics-consent__button--quiet" type="button" data-consent-choice="rejected">Decline analytics</button>' +
+      '<button class="analytics-consent__button analytics-consent__button--accept" type="button" data-consent-choice="accepted">Accept analytics</button>' +
+      '</div>';
+  } else {
+    banner.innerHTML = '<div class="analytics-consent__copy">' +
     '<span class="analytics-consent__eyebrow">PRIVACIDADE</span>' +
     '<h2 id="analytics-consent-title">Você decide sobre as estatísticas</h2>' +
     '<p>O Google Analytics ajuda a entender as visitas e o uso das páginas. A medição só começa se você aceitar. Esta escolha é separada das opções de publicidade do Google. <a href="/privacidade">Saiba mais</a>.</p>' +
@@ -100,6 +111,7 @@
     '<button class="analytics-consent__button analytics-consent__button--quiet" type="button" data-consent-choice="rejected">Recusar estatísticas</button>' +
     '<button class="analytics-consent__button analytics-consent__button--accept" type="button" data-consent-choice="accepted">Aceitar estatísticas</button>' +
     '</div>';
+  }
 
   document.body.appendChild(banner);
 

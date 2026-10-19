@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clean MP4 and MOV Metadata | AI Content Cleaner</title>
+  <meta name="description" content="Inspect and clean common metadata in MP4 and MOV videos in your browser. Files are not uploaded; C2PA credentials and AI watermarks are not removed.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://ferramentasgratis.com/en/video-metadata/">
+  <link rel="alternate" hreflang="pt-BR" href="https://ferramentasgratis.com/limpar-metadados-de-video">
+  <link rel="alternate" hreflang="en" href="https://ferramentasgratis.com/en/video-metadata/">
+  <link rel="alternate" hreflang="x-default" href="https://ferramentasgratis.com/limpar-metadados-de-video">
+  <meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:site_name" content="AI Content Cleaner">
+  <meta property="og:title" content="Clean MP4 and MOV Metadata"><meta property="og:description" content="Review common MP4 and MOV fields and download a processed copy on your device.">
+  <meta property="og:url" content="https://ferramentasgratis.com/en/video-metadata/"><meta name="twitter:card" content="summary">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Video Metadata Cleaner","url":"https://ferramentasgratis.com/en/video-metadata/","inLanguage":"en","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","description":"Inspect and clean common metadata fields in MP4 and MOV videos locally in your browser, without uploading the file.","browserRequirements":"Modern browser with File and Blob support","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ferramentasgratis.com/en/"},{"@type":"ListItem","position":2,"name":"Video metadata","item":"https://ferramentasgratis.com/en/video-metadata/"}]}</script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/styles.css?v=11"><link rel="stylesheet" href="/tools-extra.css?v=4">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1803254373578705" crossorigin="anonymous"></script>
+  <script src="/limpar-video.js?v=2" defer></script>
+</head>
+<body class="article-page">
+  <header class="site-header"><a class="brand" href="/en/" aria-label="AI Cleaner — home"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>AI <span class="brand-accent">Cleaner</span></span></a><nav class="main-nav" aria-label="Main navigation"><a href="/en/#image-tool">Images</a><a href="/en/#text-tool">Text</a><a href="/en/#more-tools">More tools</a><a href="/en/#faq">FAQ</a></nav><a class="language-switch" href="/limpar-metadados-de-video" lang="pt-BR">Português</a><a class="header-cta" href="/en/#more-tools">More tools <span aria-hidden="true">↘</span></a></header>
+  <main class="section-shell article-content utility-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/en/">Home</a><span aria-hidden="true">/</span><span>Video metadata</span></nav>
+    <div class="utility-hero"><div class="eyebrow">VIDEO METADATA CLEANER</div><h1>Clean common metadata from MP4 and MOV videos</h1><p class="article-lead">See which common fields accompany the file and create a copy without the recognized ones. Processing happens in your browser without re-encoding audio or video.</p></div>
+    <section class="utility-panel" aria-label="Video metadata cleaner">
+      <div class="utility-panel-head"><div><h2>Analyze a video</h2><p>One file at a time · up to 200 MB · MP4 or MOV</p></div><span class="utility-lock"><b aria-hidden="true">◈</b> Processed on your device</span></div>
+      <div class="utility-dropzone" id="videoDropzone"><strong>Choose or drop a video</strong><p>We accept .mp4 and .mov files. Your original file is never changed.</p><button class="button button-secondary" type="button" id="videoChoose">Choose video</button><input id="videoFile" type="file" accept="video/mp4,video/quicktime,.mp4,.mov" hidden></div>
+      <div class="utility-selected utility-hidden" id="videoSelected"><div><strong id="videoFileName"></strong><small id="videoFileSize"></small></div><button class="quiet-button" type="button" id="videoReset">Remove file</button></div>
+      <div class="utility-actions"><button class="button button-secondary" type="button" id="videoAnalyze" disabled>Analyze video <span aria-hidden="true">⌕</span></button><button class="button button-primary" type="button" id="videoDownload" disabled>Download clean copy <span aria-hidden="true">↓</span></button></div>
+      <div class="utility-results utility-hidden" id="videoResults"><h3>Field types found</h3><p>We show metadata categories without displaying their values.</p><ul id="videoFields"></ul><p class="video-result-note" id="videoNote"></p></div>
+      <p class="utility-status" id="videoStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+    </section>
+    <aside class="utility-notice"><span aria-hidden="true">i</span><span><b>Limited, transparent cleanup:</b> the tool recognizes common MP4/MOV fields. Unknown blocks are preserved; we do not promise to remove every metadata type from every editing app.</span></aside>
+    <article class="utility-content">
+      <h2>What information can a video contain?</h2>
+      <p>A video file may store a title, author, date, comment, location, editing app, and other information inside the MP4 or QuickTime MOV container. The tool checks for some common fields and shows only the type of information found, not its value.</p>
+      <p>MP4 and MOV files up to 200 MB are supported. MKV, WebM, AVI, fragmented files, and unusual structures are not supported yet. A large metadata block or a structure that cannot be inspected safely may be rejected.</p>
+      <h2>How to use the cleaner</h2>
+      <ol><li>Choose an MP4 or MOV video up to 200 MB.</li><li>Select “Analyze video” to see recognized field categories. Field values are not shown.</li><li>If a clean copy is available, download it and test playback in the app where you plan to use it.</li><li>Compare the result with your original and keep the original file.</li></ol>
+      <p>If no common fields are recognized, that does not prove the video contains no metadata. Unknown blocks may remain, and a recognizable C2PA indicator blocks cleanup.</p>
+      <h2>How the copy is created</h2>
+      <p>When compatible fields are found, the tool replaces those blocks with neutral data of the same size. The encoded audio and video do not need to be re-compressed, and internal file offsets are preserved. The tool downloads a new copy; your original remains unchanged.</p>
+      <p>Only field types recognized by this version are cleaned. Proprietary metadata, subtitles, chapters, extra tracks, thumbnails, visible names inside the video, and information outside the inspected blocks may remain. Check that the copy opens before sharing.</p>
+      <h2>Example: a video exported from an editor</h2>
+      <p>A MOV file may include fields such as title, author, location, and creation or modification dates. When the tool recognizes these types, it lists their categories without showing values and lets you download a copy with the matching blocks neutralized. Audio and video tracks are not re-encoded, but unknown fields may remain, so test the copy before sharing.</p>
+      <h2>Metadata is not an AI watermark</h2>
+      <p>Provenance credentials such as Content Credentials/C2PA describe how content was created or edited. If the tool finds a recognizable C2PA indicator, it stops instead of modifying the file. This check does not validate a credential or guarantee recognition of every provenance format.</p>
+      <p>Invisible marks embedded in video pixels are part of the frames, not ordinary container metadata. This tool does not detect or remove them. It also does not erase visible text, logos, subtitles, or labels, and it cannot promise to change a platform’s classification.</p>
+      <h2>Privacy during processing</h2>
+      <p>Reading and creating the copy happen locally in your browser. The video is not uploaded to AI Content Cleaner for processing. The site does not read or record metadata values; optional analytics only records that the video tool was used if you consent.</p>
+      <h2>Frequently asked questions</h2>
+      <details><summary>Will the video lose quality or audio?</summary><p>The tool does not re-encode audio or video tracks. It changes only recognized container fields. Still, check the copy in your target app and keep the original.</p></details>
+      <details><summary>Does this remove SynthID or make the video impossible to identify as AI?</summary><p>No. Marks embedded in video frames remain. The tool only cleans some common metadata and does not try to bypass detection, labels, or provenance credentials.</p></details>
+      <details><summary>Is the video uploaded to a server?</summary><p>No. The file is read and the copy is assembled in your browser. Video content and metadata values are not sent to AI Content Cleaner.</p></details>
+      <details><summary>Why might cleanup be blocked?</summary><p>If the scan finds a recognizable C2PA credential indicator, an advanced block it cannot inspect, or an incompatible structure, it will not create a copy. This helps avoid changing provenance data or producing a damaged file.</p></details>
+      <div class="utility-crosslinks"><a href="/en/image-metadata/">Image metadata</a><a href="/en/invisible-text-cleaner/">Invisible text characters</a></div>
+    </article>
+  </main>
+  <footer class="site-footer"><div class="section-shell footer-inner"><a class="brand brand-footer" href="/en/"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>AI <span class="brand-accent">Cleaner</span></span></a><a href="/en/about/">About</a><a href="/en/privacy/">Privacy</a><button class="footer-preferences" type="button" data-open-privacy-settings>Privacy preferences</button><a href="/en/terms/">Terms</a><a href="/limpar-metadados-de-video" lang="pt-BR">Português</a></div></footer>
+  <script src="/privacy-consent.js?v=4"></script>
+</body>
+</html>

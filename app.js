@@ -2,6 +2,8 @@ const MAX_FILES = 20;
 const MAX_TOTAL = 100 * 1024 * 1024;
 const MAX_FILE = 40 * 1024 * 1024;
 const MAX_PIXELS = 40_000_000;
+const IS_ENGLISH = document.documentElement.lang === 'en';
+const localized = (pt, en) => IS_ENGLISH ? en : pt;
 
 const input = document.querySelector('#fileInput');
 const dropzone = document.querySelector('#dropzone');
@@ -35,19 +37,19 @@ function addFiles(files) {
   const messages = [];
   for (const file of files) {
     if (items.length >= MAX_FILES) {
-      messages.push(`O limite é ${MAX_FILES} imagens por sessão.`);
+      messages.push(localized(`O limite é ${MAX_FILES} imagens por sessão.`, `Limit is ${MAX_FILES} images per session.`));
       break;
     }
     if (!supportedTypes.has(file.type)) {
-      messages.push(`${file.name}: formato não suportado. Use JPEG, PNG ou WebP.`);
+      messages.push(localized(`${file.name}: formato não suportado. Use JPEG, PNG ou WebP.`, `${file.name}: unsupported format. Use JPEG, PNG, or WebP.`));
       continue;
     }
     if (file.size > MAX_FILE) {
-      messages.push(`${file.name}: o limite por imagem é 40 MB.`);
+      messages.push(localized(`${file.name}: o limite por imagem é 40 MB.`, `${file.name}: the per-image limit is 40 MB.`));
       continue;
     }
     if (totalBytes + file.size > MAX_TOTAL) {
-      messages.push('O limite total de 100 MB por sessão foi atingido.');
+      messages.push(localized('O limite total de 100 MB por sessão foi atingido.', 'The 100 MB total session limit has been reached.'));
       break;
     }
     if (items.some(item => item.file.name === file.name && item.file.size === file.size)) continue;
@@ -72,7 +74,7 @@ function render() {
     const thumb = document.createElement('img');
     thumb.className = 'thumb';
     thumb.src = item.preview;
-    thumb.alt = `Prévia de ${item.file.name}`;
+    thumb.alt = localized(`Prévia de ${item.file.name}`, `Preview of ${item.file.name}`);
 
     const info = document.createElement('div');
     info.className = 'file-info';
@@ -88,16 +90,16 @@ function render() {
     result.className = 'file-result';
     if (item.result) {
       result.classList.add('ready');
-      result.textContent = 'Pronta';
+      result.textContent = localized('Pronta', 'Ready');
       const downloadBtn = document.createElement('button');
       downloadBtn.className = 'row-download';
       downloadBtn.type = 'button';
-      downloadBtn.textContent = 'Baixar';
-      downloadBtn.setAttribute('aria-label', `Baixar ${item.result.name}`);
+      downloadBtn.textContent = localized('Baixar', 'Download');
+      downloadBtn.setAttribute('aria-label', localized(`Baixar ${item.result.name}`, `Download ${item.result.name}`));
       downloadBtn.addEventListener('click', () => download(item));
       row.append(thumb, info, result, downloadBtn);
     } else {
-      result.textContent = item.error ? 'Não foi possível limpar' : 'Aguardando';
+      result.textContent = item.error ? localized('Não foi possível limpar', 'Could not clean') : localized('Aguardando', 'Waiting');
       if (item.error) {
         result.title = item.error;
         result.setAttribute('aria-label', `${result.textContent}: ${item.error}`);
@@ -106,7 +108,7 @@ function render() {
       removeBtn.className = 'remove-file';
       removeBtn.type = 'button';
       removeBtn.textContent = '×';
-      removeBtn.setAttribute('aria-label', `Remover ${item.file.name} da lista`);
+      removeBtn.setAttribute('aria-label', localized(`Remover ${item.file.name} da lista`, `Remove ${item.file.name} from the list`));
       removeBtn.addEventListener('click', () => removeItem(item.id));
       row.append(thumb, info, result, removeBtn);
       if (item.error) {
@@ -119,12 +121,12 @@ function render() {
     list.append(row);
   }
 
-  count.textContent = `${items.length} ${items.length === 1 ? 'imagem' : 'imagens'}`;
-  sizeLabel.textContent = items.length ? `· ${formatSize(totalBytes)} no total` : '';
+  count.textContent = `${items.length} ${items.length === 1 ? localized('imagem', 'image') : localized('imagens', 'images')}`;
+  sizeLabel.textContent = items.length ? localized(`· ${formatSize(totalBytes)} no total`, `· ${formatSize(totalBytes)} total`) : '';
   const pending = items.some(item => !item.result);
   processBtn.disabled = !items.length || !pending;
   if (!processBtn.dataset.busy) {
-    processBtn.innerHTML = itemErrorExists() ? 'Tentar novamente <span aria-hidden="true">↻</span>' : 'Remover metadados <span aria-hidden="true">✳</span>';
+    processBtn.innerHTML = itemErrorExists() ? localized('Tentar novamente <span aria-hidden="true">↻</span>', 'Try again <span aria-hidden="true">↻</span>') : localized('Remover metadados <span aria-hidden="true">✳</span>', 'Remove metadata <span aria-hidden="true">✳</span>');
   }
   downloadAllBtn.hidden = !items.some(item => item.result);
 }
@@ -154,17 +156,17 @@ function download(item) {
 }
 
 async function stripImageMetadata(file) {
-  if (!supportedTypes.has(file.type)) throw new Error('Formato não suportado.');
+  if (!supportedTypes.has(file.type)) throw new Error(localized('Formato não suportado.', 'Unsupported format.'));
   let bitmap;
   try {
     bitmap = await createImageBitmap(file);
   } catch {
-    throw new Error('Não foi possível abrir a imagem. Exporte-a novamente como JPEG, PNG ou WebP.');
+    throw new Error(localized('Não foi possível abrir a imagem. Exporte-a novamente como JPEG, PNG ou WebP.', 'Could not open the image. Export it again as JPEG, PNG, or WebP.'));
   }
 
   if (bitmap.width * bitmap.height > MAX_PIXELS) {
     bitmap.close();
-    throw new Error('Imagem acima de 40 megapixels: pode exigir memória demais neste aparelho.');
+    throw new Error(localized('Imagem acima de 40 megapixels: pode exigir memória demais neste aparelho.', 'Image exceeds 40 megapixels and may require too much memory on this device.'));
   }
 
   const canvas = document.createElement('canvas');
@@ -173,7 +175,7 @@ async function stripImageMetadata(file) {
   const context = canvas.getContext('2d');
   if (!context) {
     bitmap.close();
-    throw new Error('Este navegador não conseguiu preparar a imagem.');
+    throw new Error(localized('Este navegador não conseguiu preparar a imagem.', 'This browser could not prepare the image.'));
   }
   context.drawImage(bitmap, 0, 0);
   bitmap.close();
@@ -186,12 +188,12 @@ async function stripImageMetadata(file) {
   ));
   canvas.width = 0;
   canvas.height = 0;
-  if (!blob) throw new Error('Não foi possível exportar a imagem. Tente em outro navegador.');
+  if (!blob) throw new Error(localized('Não foi possível exportar a imagem. Tente em outro navegador.', 'Could not export the image. Try another browser.'));
 
   const actualType = blob.type || requestedType;
   const extension = actualType === 'image/png' ? 'png' : actualType === 'image/webp' ? 'webp' : 'jpg';
   const base = file.name.replace(/\.[^.]+$/, '') || 'imagem';
-  return { blob, name: `${safeName(base)}-limpo.${extension}`, type: actualType };
+  return { blob, name: `${safeName(base)}${IS_ENGLISH ? '-clean' : '-limpo'}.${extension}`, type: actualType };
 }
 
 processBtn.addEventListener('click', async () => {
@@ -199,11 +201,11 @@ processBtn.addEventListener('click', async () => {
   if (!pending.length) return;
   processBtn.dataset.busy = 'true';
   processBtn.disabled = true;
-  processBtn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Limpando…';
+  processBtn.innerHTML = localized('<span class="spinner" aria-hidden="true"></span> Limpando…', '<span class="spinner" aria-hidden="true"></span> Cleaning…');
   let completed = 0;
   let failed = 0;
   for (const item of pending) {
-    setStatus(`Processando ${completed + failed + 1} de ${pending.length} no seu aparelho…`);
+    setStatus(localized(`Processando ${completed + failed + 1} de ${pending.length} no seu aparelho…`, `Processing ${completed + failed + 1} of ${pending.length} on your device…`));
     try {
       const output = await stripImageMetadata(item.file);
       item.result = { ...output, url: URL.createObjectURL(output.blob) };
@@ -219,9 +221,9 @@ processBtn.addEventListener('click', async () => {
   render();
   if (completed) window.higienizadorTrack?.('tool_clean_completed', { tool: 'image', itemCount: completed });
   if (failed) {
-    setStatus(`${completed} imagem(ns) limpa(s). ${failed} não puderam ser processadas; confira o aviso no item.`, 'error');
+    setStatus(localized(`${completed} imagem(ns) limpa(s). ${failed} não puderam ser processadas; confira o aviso no item.`, `${completed} image(s) cleaned. ${failed} could not be processed; check the message on each item.`), 'error');
   } else {
-    setStatus(`Pronto — ${completed} ${completed === 1 ? 'imagem reexportada' : 'imagens reexportadas'} sem os metadados compatíveis.`);
+    setStatus(localized(`Pronto — ${completed} ${completed === 1 ? 'imagem reexportada' : 'imagens reexportadas'} sem os metadados compatíveis.`, `Done — ${completed} ${completed === 1 ? 'image re-exported' : 'images re-exported'} without compatible metadata.`));
   }
 });
 
@@ -297,7 +299,7 @@ if (sourceText) {
   const specialSpaces = /[\u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]/u;
   const tagMark = /[\u{e0000}-\u{e007f}]/u;
   const controlMark = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f]/u;
-  let sourceName = 'texto.txt';
+  let sourceName = localized('texto.txt', 'text.txt');
 
   function countWords(value) {
     const trimmed = value.trim();
@@ -305,11 +307,11 @@ if (sourceText) {
   }
 
   function classifyChar(char) {
-    if (specialSpaces.test(char)) return { group: 'Espaços especiais', action: 'normalizado para espaço comum', code: char.codePointAt(0) };
-    if (removeMarks.has(char)) return { group: 'Marcas invisíveis', action: 'removida', code: char.codePointAt(0) };
-    if (tagMark.test(char)) return { group: 'Caracteres de tag invisíveis', action: 'removido', code: char.codePointAt(0) };
-    if (controlMark.test(char)) return { group: 'Caracteres de controle', action: 'removido', code: char.codePointAt(0) };
-    if (bidiMarks.has(char)) return { group: 'Controles de direção', action: 'opcional — mantido por padrão', code: char.codePointAt(0) };
+    if (specialSpaces.test(char)) return { group: localized('Espaços especiais', 'Special spaces'), action: localized('normalizado para espaço comum', 'normalized to a regular space'), code: char.codePointAt(0) };
+    if (removeMarks.has(char)) return { group: localized('Marcas invisíveis', 'Invisible marks'), action: localized('removida', 'removed'), code: char.codePointAt(0) };
+    if (tagMark.test(char)) return { group: localized('Caracteres de tag invisíveis', 'Invisible tag characters'), action: localized('removido', 'removed'), code: char.codePointAt(0) };
+    if (controlMark.test(char)) return { group: localized('Caracteres de controle', 'Control characters'), action: localized('removido', 'removed'), code: char.codePointAt(0) };
+    if (bidiMarks.has(char)) return { group: localized('Controles de direção', 'Direction controls'), action: localized('opcional — mantido por padrão', 'optional — kept by default'), code: char.codePointAt(0) };
     return null;
   }
 
@@ -335,8 +337,8 @@ if (sourceText) {
     findings.hidden = false;
     const summary = document.createElement('strong');
     summary.textContent = report.total
-      ? `${report.total} ocorrência(s) encontrada(s) em ${report.groups.length} grupo(s). Revise antes de limpar:`
-      : 'Nenhum dos caracteres invisíveis comuns que verificamos foi encontrado.';
+      ? localized(`${report.total} ocorrência(s) encontrada(s) em ${report.groups.length} grupo(s). Revise antes de limpar:`, `${report.total} occurrence(s) found in ${report.groups.length} group(s). Review before cleaning:`)
+      : localized('Nenhum dos caracteres invisíveis comuns que verificamos foi encontrado.', 'None of the common invisible characters we check for were found.');
     findings.append(summary);
     if (report.groups.length) {
       const chips = document.createElement('div');
@@ -373,16 +375,16 @@ if (sourceText) {
 
   function updateWordCount() {
     const words = countWords(sourceText.value);
-    wordCount.textContent = `${words.toLocaleString('pt-BR')} palavras · até 20.000`;
+    wordCount.textContent = IS_ENGLISH ? `${words.toLocaleString('en-US')} words · up to 20,000` : `${words.toLocaleString('pt-BR')} palavras · até 20.000`;
     const tooLong = words > 20000;
     analyzeTextBtn.disabled = tooLong;
     cleanTextBtn.disabled = tooLong;
-    if (tooLong) setTextStatus('O limite é de 20.000 palavras. Reduza o texto para continuar.', 'error');
+    if (tooLong) setTextStatus(localized('O limite é de 20.000 palavras. Reduza o texto para continuar.', 'The limit is 20,000 words. Shorten the text to continue.'), 'error');
   }
 
   function markOutputStale() {
     cleanedText.value = '';
-    outputLabel.textContent = 'Aguardando limpeza';
+    outputLabel.textContent = localized('Aguardando limpeza', 'Waiting for cleaning');
     copyTextBtn.disabled = true;
     downloadTextBtn.disabled = true;
     if (!findings.hidden) findings.hidden = true;
@@ -395,32 +397,32 @@ if (sourceText) {
     if (countWords(sourceText.value) > 20000) return updateWordCount();
     updateFindings(sourceText.value);
     window.higienizadorTrack?.('tool_analysis_completed', { tool: 'text' });
-    setTextStatus('Análise concluída. O conteúdo não foi alterado.');
+    setTextStatus(localized('Análise concluída. O conteúdo não foi alterado.', 'Analysis complete. The content has not been changed.'));
   });
   cleanTextBtn.addEventListener('click', () => {
     const words = countWords(sourceText.value);
-    if (!sourceText.value.trim()) return setTextStatus('Cole ou digite um texto antes de limpar.', 'error');
+    if (!sourceText.value.trim()) return setTextStatus(localized('Cole ou digite um texto antes de limpar.', 'Paste or type some text before cleaning.'), 'error');
     if (words > 20000) return updateWordCount();
     const report = updateFindings(sourceText.value);
     cleanedText.value = cleanSource(sourceText.value);
-    outputLabel.textContent = 'Resultado pronto';
+    outputLabel.textContent = localized('Resultado pronto', 'Result ready');
     copyTextBtn.disabled = false;
     downloadTextBtn.disabled = false;
     const removed = report.groups.filter(group => !group.action.startsWith('opcional')).reduce((sum, group) => sum + group.count, 0);
     window.higienizadorTrack?.('tool_clean_completed', { tool: 'text' });
     setTextStatus(removed
-      ? `Pronto. ${removed} ocorrência(s) removida(s) ou normalizada(s); palavras e pontuação foram preservadas.`
-      : 'Pronto. Não encontramos marcas comuns para remover; o texto foi mantido.');
+      ? localized(`Pronto. ${removed} ocorrência(s) removida(s) ou normalizada(s); palavras e pontuação foram preservadas.`, `Done. ${removed} occurrence(s) removed or normalized; words and punctuation were preserved.`)
+      : localized('Pronto. Não encontramos marcas comuns para remover; o texto foi mantido.', 'Done. We found no common marks to remove, so the text was left unchanged.'));
   });
   copyTextBtn.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(cleanedText.value);
       window.higienizadorTrack?.('tool_result_copied', { tool: 'text' });
-      setTextStatus('Resultado copiado para a área de transferência.');
+      setTextStatus(localized('Resultado copiado para a área de transferência.', 'Result copied to the clipboard.'));
     } catch {
       cleanedText.focus();
       cleanedText.select();
-      setTextStatus('Não foi possível copiar automaticamente. O resultado está selecionado para você copiar.', 'error');
+      setTextStatus(localized('Não foi possível copiar automaticamente. O resultado está selecionado para você copiar.', 'Could not copy automatically. The result is selected for you to copy.'), 'error');
     }
   });
   downloadTextBtn.addEventListener('click', () => {
@@ -430,7 +432,7 @@ if (sourceText) {
     const extension = /\.md$/i.test(sourceName) ? 'md' : 'txt';
     const base = sourceName.replace(/\.(txt|md)$/i, '') || 'texto';
     link.href = url;
-    link.download = `${safeName(base)}-limpo.${extension}`;
+    link.download = `${safeName(base)}${IS_ENGLISH ? '-clean' : '-limpo'}.${extension}`;
     window.higienizadorTrack?.('tool_result_downloaded', { tool: 'text' });
     document.body.append(link);
     link.click();
@@ -441,32 +443,32 @@ if (sourceText) {
     const file = textFileInput.files?.[0];
     textFileInput.value = '';
     if (!file) return;
-    if (file.size > 1024 * 1024) return setTextStatus('O arquivo pode ter no máximo 1 MB.', 'error');
-    if (!/\.(txt|md)$/i.test(file.name)) return setTextStatus('Escolha um arquivo .txt ou .md.', 'error');
+    if (file.size > 1024 * 1024) return setTextStatus(localized('O arquivo pode ter no máximo 1 MB.', 'The file can be no larger than 1 MB.'), 'error');
+    if (!/\.(txt|md)$/i.test(file.name)) return setTextStatus(localized('Escolha um arquivo .txt ou .md.', 'Choose a .txt or .md file.'), 'error');
     try {
       sourceText.value = await file.text();
       sourceName = file.name;
       markOutputStale();
-      setTextStatus(`Arquivo “${file.name}” aberto localmente.`);
+      setTextStatus(localized(`Arquivo “${file.name}” aberto localmente.`, `File “${file.name}” opened locally.`));
       if (countWords(sourceText.value) > 20000) updateWordCount();
     } catch {
-      setTextStatus('Não foi possível ler o arquivo. Tente outro arquivo de texto UTF-8.', 'error');
+      setTextStatus(localized('Não foi possível ler o arquivo. Tente outro arquivo de texto UTF-8.', 'Could not read the file. Try another UTF-8 text file.'), 'error');
     }
   });
   document.querySelector('#sampleTextBtn').addEventListener('click', () => {
     sourceText.value = 'Texto de exemplo com um espaço especial e uma marca invisível​.';
-    sourceName = 'texto.txt';
+    sourceName = localized('texto.txt', 'text.txt');
     markOutputStale();
     updateFindings(sourceText.value);
     window.higienizadorTrack?.('tool_example_loaded', { tool: 'text' });
-    setTextStatus('Exemplo carregado. Clique em “Limpar caracteres” para ver o resultado.');
+    setTextStatus(localized('Exemplo carregado. Clique em “Limpar caracteres” para ver o resultado.', 'Example loaded. Click “Clean characters” to see the result.'));
   });
   document.querySelector('#clearTextBtn').addEventListener('click', () => {
     sourceText.value = '';
     cleanedText.value = '';
-    sourceName = 'texto.txt';
+    sourceName = localized('texto.txt', 'text.txt');
     findings.hidden = true;
-    outputLabel.textContent = 'Aguardando limpeza';
+    outputLabel.textContent = localized('Aguardando limpeza', 'Waiting for cleaning');
     copyTextBtn.disabled = true;
     downloadTextBtn.disabled = true;
     setTextStatus('');

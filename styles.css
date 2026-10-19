@@ -73,3 +73,5 @@ input[type="checkbox"]{width:18px;height:18px;flex:0 0 auto}
 .format-note span:nth-child(-n+3){color:#3e5a4e;font-size:9px}
 .privacy-chip{padding:6px 10px;border:1px solid #dce5dc;border-radius:999px;background:#fffefa;box-shadow:0 4px 14px rgba(27,66,48,.08)}
 .scene-hill{color:#102a24}
+
+.language-switch{color:var(--green);font-size:12px;font-weight:700;text-underline-offset:4px;white-space:nowrap}.language-switch:hover,.language-switch:focus-visible{color:#173c2b}

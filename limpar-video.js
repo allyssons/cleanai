@@ -1,6 +1,55 @@
 (() => {
   'use strict';
 
+  const IS_ENGLISH = document.documentElement.lang === 'en';
+  const ENGLISH_MESSAGES = {
+    'Escolha um vídeo MP4 ou MOV. Outros formatos ainda não são compatíveis.': 'Choose an MP4 or MOV video. Other formats are not supported yet.',
+    'O limite desta versão é 200 MB por vídeo.': 'The limit is 200 MB per video.',
+    'Este arquivo está vazio.': 'This file is empty.',
+    'A estrutura do vídeo está incompleta.': 'The video structure is incomplete.',
+    'Este vídeo excede o tamanho que o navegador consegue processar com segurança.': 'This video exceeds the size that the browser can safely process.',
+    'O arquivo não parece ser um MP4/MOV íntegro.': 'This does not appear to be a valid MP4/MOV file.',
+    'Campo de metadados': 'Metadata field',
+    'O vídeo tem uma estrutura de metadados complexa demais para esta versão.': 'The video metadata structure is too complex for this version.',
+    'O vídeo contém metadados demais para esta versão.': 'The video contains too much metadata for this version.',
+    'O vídeo tem fragmentos demais para esta versão.': 'The video has too many fragments for this version.',
+    'Não encontramos uma estrutura MP4/MOV compatível neste arquivo.': 'We could not find a compatible MP4/MOV structure in this file.',
+    'A seção de metadados deste vídeo é grande demais para esta versão.': 'This video metadata section is too large for this version.',
+    'Encontramos campos sobrepostos e interrompemos a limpeza para preservar o vídeo.': 'We found overlapping fields and stopped cleaning to preserve the video.',
+    'Nenhum campo comum reconhecido': 'No recognized common fields',
+    'Encontramos um indicador de Content Credentials/C2PA na estrutura do arquivo. A ferramenta não altera este vídeo para não interferir em sua procedência. Isso não verifica a validade da credencial.': 'We found a Content Credentials/C2PA indicator in the file structure. The tool will not change this video to avoid interfering with its provenance. This does not verify the credential.',
+    'A cópia limpa foi bloqueada para preservar a possível credencial de procedência.': 'Cleaning was blocked to preserve the possible provenance credential.',
+    'Há um bloco avançado que não conseguimos inspecionar com segurança. Ele pode conter dados proprietários ou de procedência; por isso, a ferramenta não altera este vídeo.': 'There is an advanced block we cannot safely inspect. It may contain proprietary or provenance data, so the tool will not change this video.',
+    'A cópia limpa foi bloqueada porque não foi possível verificar um bloco do arquivo.': 'Cleaning was blocked because we could not inspect one of the file blocks.',
+    'Exibimos os tipos de campos, sem revelar seus valores. Blocos desconhecidos são preservados. A análise não encontrou um indicador C2PA reconhecível; isso não detecta marcas invisíveis nos quadros.': 'We show field types without revealing their values. Unknown blocks are preserved. The scan found no recognizable C2PA indicator; it does not detect invisible marks in the video frames.',
+    'Não exibimos valores de metadados. Blocos desconhecidos são preservados e a análise não detecta marcas invisíveis nos quadros.': 'Metadata values are not shown. Unknown blocks are preserved, and the scan does not detect invisible marks in the video frames.',
+    'Não encontramos campos comuns que esta versão consiga limpar.': 'We found no common fields this version can clean.',
+    'Analisando vídeo…': 'Analyzing video…',
+    'Lendo a estrutura local do arquivo. Nenhum conteúdo é enviado.': 'Reading the file structure on your device. No content is uploaded.',
+    'Não foi possível analisar este arquivo.': 'Could not analyze this file.',
+    'Analisar vídeo': 'Analyze video',
+    'Cópia criada sem recompactar as faixas de vídeo e áudio. O original permaneceu intacto.': 'Copy created without re-encoding the video or audio tracks. The original was left unchanged.',
+    'Título': 'Title',
+    'Autor ou artista': 'Author or artist',
+    'Álbum': 'Album',
+    'Data': 'Date',
+    'Programa de edição': 'Editing software',
+    'Codificador': 'Encoder',
+    'Comentário': 'Comment',
+    'Descrição': 'Description',
+    'Direitos autorais': 'Copyright',
+    'Localização': 'Location',
+    'Direção': 'Director',
+    'Autor': 'Author',
+    'Produtor': 'Producer',
+    'Editora': 'Publisher',
+    'Palavras-chave': 'Keywords',
+    'Artista': 'Performer',
+    'Gênero': 'Genre',
+    'Ano': 'Year',
+  };
+  const localized = (text, en) => IS_ENGLISH ? (en || ENGLISH_MESSAGES[text] || text) : text;
+
   const MAX_FILE_SIZE = 200 * 1024 * 1024;
   const MAX_MOVIE_BOX_SIZE = 32 * 1024 * 1024;
   const MAX_UUID_SCAN_SIZE = 4 * 1024 * 1024;
@@ -8,30 +57,30 @@
   const CONTAINERS = new Set(['moov', 'trak', 'mdia', 'minf', 'stbl', 'edts', 'dinf', 'mvex', 'moof', 'traf', 'udta']);
   const C2PA_UUID = [0xd8, 0xfe, 0xc3, 0xd6, 0x1b, 0x0e, 0x48, 0x3c, 0x92, 0x97, 0x58, 0x28, 0x87, 0x7e, 0xc4, 0x81];
   const QUICKTIME_TAGS = {
-    '©nam': 'Título',
-    '©ART': 'Autor ou artista',
-    '©alb': 'Álbum',
-    '©day': 'Data',
-    '©too': 'Programa de edição',
-    '©enc': 'Codificador',
-    '©cmt': 'Comentário',
-    '©des': 'Descrição',
-    '©cpy': 'Direitos autorais',
-    '©xyz': 'Localização',
-    '©dir': 'Direção',
-    '©wrt': 'Autor',
-    '©prd': 'Produtor',
-    '©pub': 'Editora',
-    '©key': 'Palavras-chave',
-    loci: 'Localização',
-    cprt: 'Direitos autorais',
-    auth: 'Autor',
-    titl: 'Título',
-    perf: 'Artista',
-    gnre: 'Gênero',
-    dscp: 'Descrição',
-    albm: 'Álbum',
-    yrrc: 'Ano'
+    '©nam': localized('Título'),
+    '©ART': localized('Autor ou artista'),
+    '©alb': localized('Álbum'),
+    '©day': localized('Data'),
+    '©too': localized('Programa de edição'),
+    '©enc': localized('Codificador'),
+    '©cmt': localized('Comentário'),
+    '©des': localized('Descrição'),
+    '©cpy': localized('Direitos autorais'),
+    '©xyz': localized('Localização'),
+    '©dir': localized('Direção'),
+    '©wrt': localized('Autor'),
+    '©prd': localized('Produtor'),
+    '©pub': localized('Editora'),
+    '©key': localized('Palavras-chave'),
+    loci: localized('Localização'),
+    cprt: localized('Direitos autorais'),
+    auth: localized('Autor'),
+    titl: localized('Título'),
+    perf: localized('Artista'),
+    gnre: localized('Gênero'),
+    dscp: localized('Descrição'),
+    albm: localized('Álbum'),
+    yrrc: localized('Ano')
   };
 
   const fileInput = document.getElementById('videoFile');
@@ -55,7 +104,7 @@
   let busy = false;
 
   function updateStatus(message, state = '') {
-    status.textContent = message;
+    status.textContent = localized(message);
     if (state) status.dataset.state = state;
     else delete status.dataset.state;
   }
@@ -185,7 +234,7 @@
   }
 
   function labelFor(type) {
-    return QUICKTIME_TAGS[type] || 'Campo de metadados';
+    return QUICKTIME_TAGS[type] || localized('Campo de metadados');
   }
 
   function addRange(ranges, labels, range) {
@@ -218,7 +267,7 @@
               start: absoluteMovieStart + creationStart,
               end: absoluteMovieStart + timeEnd,
               kind: 'bytes',
-              label: 'Datas de criação e alteração'
+              label: localized('Datas de criação e alteração', 'Creation and modification dates')
             });
           }
         }
@@ -332,22 +381,22 @@
     });
     if (!result.labels.length) {
       const item = document.createElement('li');
-      item.textContent = 'Nenhum campo comum reconhecido';
+      item.textContent = localized('Nenhum campo comum reconhecido');
       fields.append(item);
     }
 
     if (result.credentialMarker) {
-      note.textContent = 'Encontramos um indicador de Content Credentials/C2PA na estrutura do arquivo. A ferramenta não altera este vídeo para não interferir em sua procedência. Isso não verifica a validade da credencial.';
+      note.textContent = localized('Encontramos um indicador de Content Credentials/C2PA na estrutura do arquivo. A ferramenta não altera este vídeo para não interferir em sua procedência. Isso não verifica a validade da credencial.');
       updateStatus('A cópia limpa foi bloqueada para preservar a possível credencial de procedência.', 'warning');
     } else if (result.oversizedUuid) {
-      note.textContent = 'Há um bloco avançado que não conseguimos inspecionar com segurança. Ele pode conter dados proprietários ou de procedência; por isso, a ferramenta não altera este vídeo.';
+      note.textContent = localized('Há um bloco avançado que não conseguimos inspecionar com segurança. Ele pode conter dados proprietários ou de procedência; por isso, a ferramenta não altera este vídeo.');
       updateStatus('A cópia limpa foi bloqueada porque não foi possível verificar um bloco do arquivo.', 'warning');
     } else if (result.labels.length) {
-      note.textContent = 'Exibimos os tipos de campos, sem revelar seus valores. Blocos desconhecidos são preservados. A análise não encontrou um indicador C2PA reconhecível; isso não detecta marcas invisíveis nos quadros.';
+      note.textContent = localized('Exibimos os tipos de campos, sem revelar seus valores. Blocos desconhecidos são preservados. A análise não encontrou um indicador C2PA reconhecível; isso não detecta marcas invisíveis nos quadros.');
       downloadButton.disabled = false;
-      updateStatus(result.labels.length + ' tipo(s) de campo comum(ns) encontrados. Revise as limitações antes de baixar a cópia.', 'busy');
+      updateStatus(IS_ENGLISH ? result.labels.length + ' common field type(s) found. Review the limitations before downloading the copy.' : result.labels.length + ' tipo(s) de campo comum(ns) encontrados. Revise as limitações antes de baixar a cópia.', 'busy');
     } else {
-      note.textContent = 'Não exibimos valores de metadados. Blocos desconhecidos são preservados e a análise não detecta marcas invisíveis nos quadros.';
+      note.textContent = localized('Não exibimos valores de metadados. Blocos desconhecidos são preservados e a análise não detecta marcas invisíveis nos quadros.');
       updateStatus('Não encontramos campos comuns que esta versão consiga limpar.', 'busy');
     }
 
@@ -360,7 +409,7 @@
     busy = true;
     analyzeButton.disabled = true;
     downloadButton.disabled = true;
-    analyzeButton.textContent = 'Analisando vídeo…';
+    analyzeButton.textContent = localized('Analisando vídeo…');
     updateStatus('Lendo a estrutura local do arquivo. Nenhum conteúdo é enviado.', 'busy');
 
     try {
@@ -375,7 +424,7 @@
       updateStatus(error instanceof Error ? error.message : 'Não foi possível analisar este arquivo.', 'error');
     } finally {
       busy = false;
-      analyzeButton.textContent = 'Analisar vídeo';
+      analyzeButton.textContent = localized('Analisar vídeo');
       analyzeButton.disabled = !currentFile;
     }
   }
@@ -401,7 +450,7 @@
     const link = document.createElement('a');
     const objectUrl = URL.createObjectURL(cleaned);
     link.href = objectUrl;
-    link.download = baseName + '-metadados-limpos.' + extension;
+    link.download = baseName + (IS_ENGLISH ? '-metadata-cleaned.' : '-metadados-limpos.') + extension;
     document.body.append(link);
     link.click();
     link.remove();
