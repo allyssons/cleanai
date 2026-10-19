@@ -35,6 +35,8 @@
       <h2>Como limpar o texto no navegador</h2>
       <ol><li>Cole o conteúdo ou abra um arquivo UTF-8 .txt ou .md de até 1 MB.</li><li>Analise o texto para ver os grupos e códigos Unicode encontrados.</li><li>Escolha “Limpar caracteres” e revise o resultado antes de copiar ou baixar.</li></ol>
       <p>O limite atual é de 20.000 palavras. O processamento acontece no navegador e o conteúdo não é enviado para um servidor. A ferramenta não executa o texto colado nem abre formatos com macros.</p>
+      <h2>Exemplo: normalizar um espaço especial</h2>
+      <p>Para deixar visível o caractere no exemplo, usamos a notação <code>[U+00A0]</code>: <code>pedido[U+00A0]123</code>. Esse espaço não separável pode ser convertido em um espaço comum, resultando em <code>pedido 123</code>. A ferramenta mostra o grupo encontrado antes da limpeza; revise o resultado, sobretudo se o texto usar espaços especiais com significado próprio.</p>
 
       <h2>Limpeza de caracteres não é detecção de autoria</h2>
       <p>Encontrar um caractere invisível não prova quem escreveu o texto: editores, PDFs, aplicativos de mensagem e processos de copiar e colar também os inserem. Esta ferramenta não reescreve o conteúdo para fazê-lo parecer humano, não detecta se foi escrito por IA e não remove marcas estatísticas baseadas na escolha das palavras.</p>
