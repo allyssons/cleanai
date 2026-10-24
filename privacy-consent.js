@@ -78,7 +78,7 @@
     'tool_result_downloaded',
     'tool_example_loaded'
   ]);
-  const trackedTools = new Set(['image', 'text', 'pdf', 'office', 'links', 'video']);
+  const trackedTools = new Set(['image', 'text', 'pdf', 'office', 'links', 'video', 'video_joiner']);
 
   window.higienizadorTrack = function (eventName, details = {}) {
     if (!trackedEvents.has(eventName) || !trackedTools.has(details.tool)) return;

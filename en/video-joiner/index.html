@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Join videos online and cut silence | AI Content Cleaner</title>
+  <meta name="description" content="Join MP4 and MOV videos, trim silence at the beginning and end, and add smooth transitions. Runs locally in your browser; videos are not uploaded.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://ferramentasgratis.com/en/video-joiner/">
+  <link rel="alternate" hreflang="pt-BR" href="https://ferramentasgratis.com/juntar-videos">
+  <link rel="alternate" hreflang="en" href="https://ferramentasgratis.com/en/video-joiner/">
+  <link rel="alternate" hreflang="x-default" href="https://ferramentasgratis.com/juntar-videos">
+  <meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:site_name" content="AI Content Cleaner">
+  <meta property="og:title" content="Join videos and trim silence in your browser">
+  <meta property="og:description" content="Arrange MP4/MOV clips, find silence and create one video with smooth transitions. Your files stay on your device.">
+  <meta property="og:url" content="https://ferramentasgratis.com/en/video-joiner/"><meta name="twitter:card" content="summary">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Join videos and trim silence","url":"https://ferramentasgratis.com/en/video-joiner/","inLanguage":"en","applicationCategory":"MultimediaApplication","operatingSystem":"Any","description":"A free browser tool to join MP4 and MOV clips, detect silence at clip edges and apply smooth transitions locally.","browserRequirements":"Modern browser with WebAssembly support, enough memory and a connection to load the video library on demand","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ferramentasgratis.com/en/"},{"@type":"ListItem","position":2,"name":"Join videos","item":"https://ferramentasgratis.com/en/video-joiner/"}]}</script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/styles.css?v=12"><link rel="stylesheet" href="/tools-extra.css?v=5">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1803254373578705" crossorigin="anonymous"></script>
+  <script src="/video-joiner.js?v=1" defer></script>
+</head>
+<body class="article-page">
+  <header class="site-header"><a class="brand" href="/en/" aria-label="AI Content Cleaner — home"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>AI Content <span class="brand-accent">Cleaner</span></span></a><nav class="main-nav" aria-label="Main navigation"><a href="/en/#image-tool">Images</a><a href="/en/#text-tool">Text</a><a href="/en/video-metadata/">Video metadata</a><a href="/en/#more-tools">More tools</a></nav><a class="language-switch" href="/juntar-videos" lang="pt-BR" hreflang="pt-BR">Português</a></header>
+  <main class="section-shell article-content utility-page joiner-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/en/">Home</a><span aria-hidden="true">/</span><span>Join videos</span></nav>
+    <div class="utility-hero"><div class="eyebrow">LOCAL VIDEO EDITING</div><h1>Join videos and automatically trim silence</h1><p class="article-lead">Arrange your clips, review the suggested cuts and create an MP4 with smooth transitions. Processing runs in your browser; your videos are not uploaded to this site.</p></div>
+    <section class="utility-panel" aria-label="Video joiner">
+      <div class="utility-panel-head"><div><h2>Build your video</h2><p>2 to 6 files · MP4 or MOV with audio · up to 60 MB each, 120 MB total, and 15 minutes combined</p></div><span class="utility-lock"><b aria-hidden="true">◈</b> Files stay on your device</span></div>
+      <div class="utility-dropzone" id="joinerDropzone"><strong>Choose or drop your clips</strong><p>The list order becomes the final video order. Your original files are never changed.</p><button class="button button-secondary" type="button" id="joinerChoose">Choose videos</button><input id="joinerFiles" type="file" accept="video/mp4,video/quicktime,.mp4,.mov" multiple hidden></div>
+      <section class="joiner-selection utility-hidden" id="joinerSelection" aria-label="Video order"><div class="joiner-section-head"><h3>Clip order</h3><span id="joinerCount"></span></div><ol class="joiner-order" id="joinerOrder"></ol><button class="quiet-button" type="button" id="joinerReset">Remove all</button></section>
+      <details class="joiner-settings"><summary>Adjust cuts and transition</summary><div class="joiner-options">
+        <label>Transition between clips <span><input id="joinerFade" type="number" min="0.1" max="1.5" step="0.1" value="0.5"> s</span><small>Gradual video and audio overlap.</small></label>
+        <label>Pause length to keep <span><input id="joinerPause" type="number" min="0.2" max="2" step="0.1" value="0.8"> s</span><small>Shorter pauses are grouped within a speech segment.</small></label>
+        <label>Padding before speech <span><input id="joinerMarginStart" type="number" min="0" max="1.5" step="0.05" value="0.35"> s</span><small>Helps avoid cutting off the first word.</small></label>
+        <label>Padding after speech <span><input id="joinerMarginEnd" type="number" min="0" max="1.5" step="0.05" value="0.4"> s</span><small>Helps avoid cutting off the final word.</small></label>
+      </div></details>
+      <div class="utility-actions"><button class="button button-secondary" type="button" id="joinerAnalyze" disabled>Analyze cuts <span aria-hidden="true">⌕</span></button><button class="button button-primary" type="button" id="joinerCreate" disabled>Join and download MP4 <span aria-hidden="true">↘</span></button></div>
+      <div class="joiner-progress utility-hidden" id="joinerProgress" aria-hidden="true"><i></i></div>
+      <p class="utility-status" id="joinerStatus" role="status" aria-live="polite" aria-atomic="true"></p>
+      <section class="utility-results utility-hidden" id="joinerResults"><h3>Review the suggested cuts</h3><p>Cuts remove only silence at the beginning and end of each clip. Watch the result and check the sync before sharing.</p><ol class="joiner-cuts" id="joinerCuts"></ol><p class="video-result-note">Silence detection depends on recording volume: review every cut. If a word is cut off, increase the padding or adjust audio sensitivity before creating the video.</p></section>
+      <section class="joiner-preview utility-hidden" id="joinerPreview"><h3>Final video preview</h3><video id="joinerVideo" controls playsinline></video><a class="button button-primary" id="joinerDownload" download="joined-video.mp4">Download video</a></section>
+    </section>
+<aside class="utility-notice"><span aria-hidden="true">i</span><span><b>Before you start:</b> on first use, your browser loads the FFmpeg WebAssembly video library on demand (about 31 MB) from the jsDelivr CDN. The library processes videos locally; the CDN connection downloads tool code, not your clips. Creating an MP4 can use substantial memory and take time, especially on phones. The <a href="https://github.com/ffmpegwasm/ffmpeg.wasm/tree/v12.15/packages/ffmpeg" rel="noopener noreferrer" target="_blank">@ffmpeg/ffmpeg 0.12.15 wrapper</a> is MIT-licensed; the <a href="https://github.com/ffmpegwasm/ffmpeg.wasm/tree/v12.10/packages/core" rel="noopener noreferrer" target="_blank">@ffmpeg/core 0.12.10 core</a> is GPL-2.0-or-later. See the <a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html" rel="noopener noreferrer" target="_blank">GPL license</a>, the <a href="/vendor/ffmpeg/LICENSE-GPL-2.0-or-later.txt">plain-text copy</a>, the <a href="/vendor/ffmpeg/LICENSE-MIT.txt">MIT terms</a>, and the <a href="/vendor/ffmpeg/README.md">notices and source links</a>.</span></aside>
+    <article class="utility-content">
+      <h2>How to join videos and trim silence</h2>
+      <ol><li>Select two to six MP4 or MOV clips with an audio track.</li><li>Arrange the clip order and choose how much padding to keep around speech.</li><li>Review the proposed cuts, then create and download the final MP4.</li></ol>
+      <h2>How does silence detection work?</h2>
+      <p>The tool looks for audio below a volume threshold for a minimum duration. It identifies sections with sound, ignores very short noises, and trims only the leftover parts at the beginning and end of each file. Short pauses within speech are preserved. This analysis does not understand words: review the cuts if your recording has a quiet voice, music, background noise, or overlapping speech.</p>
+      <h2>Format, quality, and limits</h2>
+      <p>The output is an H.264 MP4 with AAC audio, resized to match the first clip so videos with different dimensions can be joined. Export re-encodes video and audio, so quality and file size can change. This version accepts two to six clips, up to 60 MB each, 120 MB combined, and 15 minutes total. Files without audio, unsupported codecs, or very long clips may not work.</p>
+      <h2>Privacy and local processing</h2>
+      <p>Videos are loaded into your browser's memory and are not sent to our server for analysis or editing. When you start the tool, your browser downloads the FFmpeg WebAssembly engine from the jsDelivr CDN; the provider receives the usual technical data from a web request. Your selected videos are not included in that request. See our <a class="article-link" href="/en/privacy/">privacy policy</a> for details.</p>
+      <h2>Common questions</h2>
+      <details><summary>Does the tool remove pauses in the middle of sentences?</summary><p>No. It groups nearby sounds and trims extra silence at the edges of each clip. Pauses inside a clip remain in the edit.</p></details>
+      <details><summary>Can I change the order of the videos?</summary><p>Yes. Use the arrows beside each clip to move it up or down before analyzing.</p></details>
+      <details><summary>Are my videos uploaded or stored?</summary><p>No. Videos stay in your browser while the tool runs and are not uploaded to this site. Closing the page discards the temporary files used by the tool.</p></details>
+      <details><summary>Why might the browser slow down?</summary><p>Video requires memory and processing power. The editing engine is also downloaded on demand. Close other programs, use a computer when possible, and try smaller clips if export does not finish.</p></details>
+      <div class="utility-crosslinks"><a href="/en/video-metadata/">Clean video metadata</a><a href="/en/image-metadata/">Clean image metadata</a><a href="/en/invisible-text-cleaner/">Clean invisible text characters</a></div>
+    </article>
+  </main>
+  <footer class="site-footer"><div class="section-shell footer-inner"><a class="brand brand-footer" href="/en/"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>AI Content <span class="brand-accent">Cleaner</span></span></a><a href="/en/about/">About</a><a href="/en/privacy/">Privacy</a><button class="footer-preferences" type="button" data-open-privacy-settings>Privacy preferences</button><a href="/en/terms/">Terms</a></div></footer>
+<script src="/privacy-consent.js?v=5"></script>
+</body>
+</html>

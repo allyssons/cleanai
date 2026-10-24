@@ -1,6 +1,6 @@
 # Higienizador IA
 
-Ferramenta estática em português para higienizar metadados comuns de imagens, vídeos MP4/MOV e documentos, caracteres invisíveis em textos e parâmetros de links. Os arquivos selecionados são processados no navegador; não há API de processamento.
+Site estático bilíngue para higienizar metadados comuns de imagens, vídeos MP4/MOV e documentos, caracteres invisíveis em textos e parâmetros de links, além de juntar clipes de vídeo com cortes automáticos nas bordas. Os arquivos selecionados são processados no navegador; não há API de processamento.
 
 ## Rodar localmente
 
@@ -8,7 +8,7 @@ Abra `index.html` num navegador moderno ou use um servidor estático na pasta. N
 
 ## Publicação
 
-O projeto é publicado no Cloudflare Pages a partir da branch `main` do repositório `allyssons/cleanai`. O domínio canônico do Pages será `https://ferramentasgratis.com/`; novos commits em `main` acionam o deploy.
+O projeto é publicado no Cloudflare Pages a partir da branch `main` do repositório `allyssons/cleanai`; novos commits em `main` acionam o deploy.
 
 Arquivos de SEO na raiz:
 
@@ -20,13 +20,20 @@ Arquivos de SEO na raiz:
 
 O código oficial do Google AdSense para anúncios automáticos está no `<head>` da página inicial e das páginas de ferramentas e guias. O publisher ID é `ca-pub-1803254373578705`; a exibição depende de o Google aprovar o site e das configurações de Auto ads na conta. Os espaços manuais `data-ad-slot="content-1"` e `data-ad-slot="content-2"` continuam ocultos e não são unidades do AdSense.
 
-A política `privacidade.html` informa sobre cookies, personalização de anúncios e opções de privacidade. O `ads.txt` oficial está incluído na raiz do repositório para ser servido por `https://ferramentasgratis.com/ads.txt` quando o Pages assumir o domínio. Confira a leitura e o status no AdSense após o deploy. Mantenha as mensagens de consentimento e configurações de privacidade do Google atualizadas para as regiões e fornecedores usados.
+A política `privacidade.html` informa sobre cookies, personalização de anúncios e opções de privacidade. O `ads.txt` oficial está incluído na raiz do repositório para ser servido por `https://ferramentasgratis.com/ads.txt`. Mantenha as mensagens de consentimento e configurações de privacidade do Google atualizadas para as regiões e fornecedores usados.
+
 ## Limites das ferramentas
 
-- Imagens: JPEG, PNG e WebP; reexportação pode recomprimir o JPEG e alterar levemente tamanho, cor ou qualidade. HEIC/HEIF e TIFF ainda não são aceitos. Vídeos: MP4/MOV de até 200 MB, com limpeza limitada aos campos reconhecidos; credenciais C2PA reconhecíveis bloqueiam a limpeza e marcas d’água nos quadros não são removidas.
-- Metadados: remove os dados que o navegador não replica ao reexportar; não remove marcas d'água incorporadas aos pixels nem garante rótulos de plataformas.
-- Textos: aceita texto colado ou arquivo `.txt`/`.md` de até 1 MB, com limite de 20.000 palavras. Limpa caracteres Unicode invisíveis comuns e normaliza espaços especiais; não reescreve, não detecta autoria e não remove marcas estatísticas baseadas na escolha das palavras.
+- Imagens: JPEG, PNG e WebP; reexportar pode recomprimir JPEG e alterar levemente tamanho, cor ou qualidade. HEIC/HEIF e TIFF não são aceitos.
+- Metadados de vídeo: MP4/MOV de até 200 MB; a limpeza é limitada aos campos reconhecidos. Credenciais C2PA reconhecíveis bloqueiam a limpeza e marcas d'água nos quadros não são removidas.
+- Juntador de vídeos: 2 a 6 arquivos MP4/MOV com áudio, até 60 MB por clipe, 120 MB no total e 15 minutos combinados. A saída é recodificada localmente para MP4; o motor FFmpeg WebAssembly pode usar bastante memória e levar tempo, especialmente em celulares. Os clipes escolhidos não são enviados ao site nem ao CDN.
+- Metadados: remove dados que o navegador não replica ao reexportar; não remove marcas d'água incorporadas aos pixels nem garante rótulos de plataformas.
+- Textos: texto colado ou arquivo `.txt`/`.md` de até 1 MB, com limite de 20.000 palavras. A ferramenta limpa caracteres Unicode invisíveis comuns e normaliza espaços especiais; não reescreve, não detecta autoria e não remove marcas estatísticas baseadas na escolha das palavras.
 - Juntadores importantes para idiomas e emojis são preservados por padrão. Remover controles de direção é uma opção avançada que pode alterar a exibição de idiomas RTL.
+
+## FFmpeg WebAssembly e licenças
+
+A interface do juntador usa o wrapper `@ffmpeg/ffmpeg` 0.12.15, incluído em `vendor/ffmpeg/` sob licença MIT. Ao iniciar a análise, o navegador baixa sob demanda o núcleo `@ffmpeg/core` 0.12.10 pelo jsDelivr; o núcleo está sob GPL-2.0-or-later. Os avisos, textos das licenças e links para o código-fonte estão em [vendor/ffmpeg/README.md](vendor/ffmpeg/README.md). O núcleo não fica armazenado neste repositório.
 
 ## Google Analytics 4
 
