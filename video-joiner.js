@@ -4,9 +4,8 @@
   const MAX_FILES = 6;
   const MAX_FILE_BYTES = 200 * 1024 * 1024;
   const MAX_TOTAL_BYTES = 500 * 1024 * 1024;
-  const MAX_DURATION = 10 * 60;
   const MAX_TOTAL_DURATION = 15 * 60;
-const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
+  const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
   const FFmpegScript = '/vendor/ffmpeg/ffmpeg.js';
   const isEnglish = document.documentElement.lang.toLowerCase().startsWith('en');
   const copy = isEnglish ? {
@@ -19,14 +18,13 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
     creating: 'Joining clips and rendering the MP4 in this browser…', doneAnalysis: 'Cut analysis is ready. Review the proposed clips before creating the video.',
     noAudio: 'We could not find an audio track in this clip. This tool needs audio to detect speech and silence.',
     badVideo: 'We could not read this video. Use a complete MP4 or MOV file with a supported video and audio codec.',
-    tooLong: 'Each clip must be ten minutes or shorter, and all clips together must stay under fifteen minutes.',
     totalTooLong: 'All selected clips together must be fifteen minutes or shorter in this version.',
     createReady: 'The video is ready. Play the preview and check the audio before sharing.',
     renderError: 'The browser could not finish this video. Try fewer or smaller clips on a computer.',
     memoryError: 'The browser ran out of memory. Try fewer or smaller clips, or close other tabs.',
     analyzingButton: 'Analyzing…', creatingButton: 'Creating video…', loadingButton: 'Preparing…',
     up: 'Move up', down: 'Move down', remove: 'Remove', clip: 'Clip', cut: 'Cut', keeps: 'Keeps', starts: 'from', ends: 'to', full: 'No long silence above the selected limit was found; keeps the full clip.',
-    removed: 'removed at the edges', noSpeech: 'No clear audio segment was found; keeps the full clip.',
+    removed: 'removed', noSpeech: 'No clear audio segment was found; keeps the full clip.',
     selectionRequired: 'Add at least two clips to continue.', progress: 'Working locally in your browser. Processing time depends on your device and video length.'
   } : {
     tooMany: 'Escolha até seis vídeos.', tooLarge: 'Cada vídeo precisa ter até 200 MB.', totalLarge: 'O tamanho total dos arquivos precisa ser de até 500 MB.',
@@ -38,14 +36,13 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
     creating: 'Juntando os clipes e montando o MP4 neste navegador…', doneAnalysis: 'Análise pronta. Revise os cortes propostos antes de criar o vídeo.',
     noAudio: 'Não encontramos uma faixa de áudio neste clipe. A ferramenta precisa do áudio para detectar fala e silêncio.',
     badVideo: 'Não conseguimos ler este vídeo. Use um arquivo MP4 ou MOV íntegro com codecs de áudio e vídeo compatíveis.',
-    tooLong: 'Cada clipe precisa ter até dez minutos e, juntos, os vídeos devem ter até quinze minutos.',
     totalTooLong: 'Nesta versão, a duração somada dos clipes precisa ser de até quinze minutos.',
     createReady: 'Vídeo pronto. Assista à prévia e confira o áudio antes de compartilhar.',
     renderError: 'O navegador não conseguiu terminar este vídeo. Tente menos clipes ou arquivos menores em um computador.',
     memoryError: 'O navegador ficou sem memória. Tente menos clipes ou arquivos menores e feche outras abas.',
     analyzingButton: 'Analisando…', creatingButton: 'Criando vídeo…', loadingButton: 'Preparando…',
     up: 'Mover para cima', down: 'Mover para baixo', remove: 'Remover', clip: 'Clipe', cut: 'Corte', keeps: 'Mantém', starts: 'de', ends: 'a', full: 'Nenhuma pausa acima do limite escolhido foi encontrada; mantém o clipe inteiro.',
-    removed: 'removidos nas bordas', noSpeech: 'Não encontramos trechos claros com áudio; o clipe inteiro será mantido.',
+    removed: 'removidos', noSpeech: 'Não encontramos trechos claros com áudio; o clipe inteiro será mantido.',
     selectionRequired: 'Adicione pelo menos dois clipes para continuar.', progress: 'Processamento local no navegador. O tempo depende do aparelho e da duração dos vídeos.'
   };
 
@@ -73,6 +70,12 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
   const pauseInput = $('joinerPause');
   const marginStartInput = $('joinerMarginStart');
   const marginEndInput = $('joinerMarginEnd');
+  const sensitivityInput = $('joinerSensitivity');
+  const sensitivityValue = $('joinerSensitivityValue');
+  const reviewSummary = $('joinerReviewSummary');
+  const sourcePreviewWrap = $('joinerSourcePreviewWrap');
+  const sourceVideo = $('joinerSourceVideo');
+  const sourceCaption = $('joinerSourceCaption');
 
   let clips = [];
   let ffmpeg = null;
@@ -81,6 +84,8 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
   let running = false;
   let activeLogs = null;
   let outputUrl = null;
+  let previewStopAt = null;
+  let previewRequestId = 0;
   let currentRun = 0;
 
   function setStatus(message, state = '') {
@@ -106,6 +111,12 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
     analysis = null;
     results.classList.add('utility-hidden');
     cutsList.replaceChildren();
+    previewRequestId += 1;
+    previewStopAt = null;
+    sourceVideo.pause();
+    sourceVideo.removeAttribute('src');
+    sourceVideo.load();
+    sourcePreviewWrap.hidden = true;
     createButton.disabled = true;
     if (outputUrl) {
       URL.revokeObjectURL(outputUrl);
@@ -185,6 +196,7 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
   function removeClip(index) {
     if (running) return;
     const clip = clips[index];
+    if (clip?.previewUrl) URL.revokeObjectURL(clip.previewUrl);
     if (ffmpeg && clip?.engineName) ffmpeg.deleteFile(clip.engineName).catch(() => {});
     clips.splice(index, 1);
     invalidateAnalysis();
@@ -195,6 +207,7 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
   function resetClips() {
     if (running) return;
     clips.forEach((clip) => {
+      if (clip.previewUrl) URL.revokeObjectURL(clip.previewUrl);
       if (ffmpeg && clip.engineName) ffmpeg.deleteFile(clip.engineName).catch(() => {});
     });
     clips = [];
@@ -232,7 +245,7 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
         return;
       }
     }
-    incoming.forEach((file) => clips.push({ file, engineName: null }));
+    incoming.forEach((file) => clips.push({ file, previewUrl: URL.createObjectURL(file), engineName: null }));
     input.value = '';
     invalidateAnalysis();
     renderFiles();
@@ -309,7 +322,6 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
     if (rotation && Math.round(Math.abs(Number(rotation[1]))) % 180 === 90) [width, height] = [height, width];
     const duration = parseDuration(log);
     if (!Number.isFinite(duration) || duration <= 0) throw new Error('bad-video');
-    if (duration > MAX_DURATION) throw new Error('too-long');
     return { duration, width, height };
   }
 
@@ -393,35 +405,148 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
       joinPause,
       marginStart: number(marginStartInput, 0.35, 0, 1.5),
       marginEnd: number(marginEndInput, 0.4, 0, 1.5),
-      noiseDb: -35,
+      noiseDb: number(sensitivityInput, -35, -45, -20),
       minSilence: Math.min(0.4, joinPause)
     };
   }
 
   function createCutsList() {
     cutsList.replaceChildren();
+    sourceVideo.pause();
+    previewStopAt = null;
+    let totalOriginal = 0;
+    let totalKept = 0;
     analysis.clips.forEach((clip, index) => {
       const item = document.createElement('li');
+      item.className = 'joiner-cut-card';
+      const cardHead = document.createElement('div');
+      cardHead.className = 'joiner-cut-card-head';
       const heading = document.createElement('strong');
       heading.textContent = `${copy.clip} ${index + 1}: ${clip.file.name}`;
       const detail = document.createElement('span');
       const segments = clip.segments;
       const keptDuration = segments.reduce((sum, segment) => sum + segment.end - segment.start, 0);
       const removedDuration = Math.max(0, clip.info.duration - keptDuration);
+      totalOriginal += clip.info.duration;
+      totalKept += keptDuration;
       if (clip.fallback) detail.textContent = `${copy.noSpeech} ${formatDuration(clip.info.duration)}`;
       else if (removedDuration < 0.05) detail.textContent = `${copy.full} ${formatDuration(clip.info.duration)}`;
       else {
-        const shownSegments = segments.slice(0, 4).map((segment) => `${formatSeconds(segment.start)}–${formatSeconds(segment.end)}`);
-        const extraSegments = segments.length - shownSegments.length;
-        const segmentSummary = `${shownSegments.join('; ')}${extraSegments > 0 ? (isEnglish ? `; +${extraSegments} more` : `; +${extraSegments} trechos`) : ''}`;
         detail.textContent = isEnglish
-          ? `Keeps ${segmentSummary} (${formatDuration(keptDuration)} total); cuts ${formatDuration(removedDuration)} of silence.`
-          : `Mantém ${segmentSummary} (${formatDuration(keptDuration)} no total); corta ${formatDuration(removedDuration)} de silêncio.`;
+          ? `Keeps ${formatDuration(keptDuration)} · removes ${formatDuration(removedDuration)}`
+          : `Mantém ${formatDuration(keptDuration)} · remove ${formatDuration(removedDuration)}`;
       }
-      item.append(heading, detail);
+      cardHead.append(heading, detail);
+      const timeline = document.createElement('div');
+      timeline.className = 'joiner-timeline';
+      timeline.setAttribute('role', 'img');
+      timeline.setAttribute('aria-label', isEnglish ? 'Green sections are kept; gaps are removed.' : 'Trechos verdes são mantidos; os espaços são removidos.');
+      segments.forEach((segment) => {
+        const kept = document.createElement('span');
+        kept.className = 'joiner-timeline-kept';
+        kept.style.setProperty('--start', `${(segment.start / clip.info.duration) * 100}%`);
+        kept.style.setProperty('--size', `${((segment.end - segment.start) / clip.info.duration) * 100}%`);
+        timeline.append(kept);
+      });
+      const segmentList = document.createElement('div');
+      segmentList.className = 'joiner-segments';
+      segments.forEach((segment, segmentIndex) => {
+        const row = document.createElement('div');
+        row.className = 'joiner-segment';
+        const segmentName = document.createElement('strong');
+        segmentName.className = 'joiner-segment-name';
+        segmentName.textContent = `${isEnglish ? 'Keep' : 'Manter'} ${String(segmentIndex + 1).padStart(2, '0')}`;
+        const startLabel = document.createElement('label');
+        startLabel.textContent = isEnglish ? 'In (seconds)' : 'Entrada (segundos)';
+        const startInput = document.createElement('input');
+        startInput.type = 'number';
+        startInput.inputMode = 'decimal';
+        startInput.min = String(segmentIndex ? segments[segmentIndex - 1].end : 0);
+        startInput.max = String(Math.max(segment.start, segment.end - 0.15));
+        startInput.step = '0.05';
+        startInput.value = segment.start.toFixed(2);
+        startInput.dataset.clipIndex = String(index);
+        startInput.dataset.segmentIndex = String(segmentIndex);
+        startInput.dataset.edge = 'start';
+        startLabel.append(startInput);
+        const endLabel = document.createElement('label');
+        endLabel.textContent = isEnglish ? 'Out (seconds)' : 'Saída (segundos)';
+        const endInput = document.createElement('input');
+        endInput.type = 'number';
+        endInput.inputMode = 'decimal';
+        endInput.min = String(Math.min(clip.info.duration, segment.start + 0.15));
+        endInput.max = String(segmentIndex < segments.length - 1 ? segments[segmentIndex + 1].start : clip.info.duration);
+        endInput.step = '0.05';
+        endInput.value = segment.end.toFixed(2);
+        endInput.dataset.clipIndex = String(index);
+        endInput.dataset.segmentIndex = String(segmentIndex);
+        endInput.dataset.edge = 'end';
+        endLabel.append(endInput);
+        const play = document.createElement('button');
+        play.type = 'button';
+        play.className = 'quiet-button joiner-segment-preview';
+        play.textContent = isEnglish ? 'Preview' : 'Prévia';
+        play.setAttribute('aria-label', isEnglish ? `Preview kept segment ${segmentIndex + 1} in ${clip.file.name}` : `Prévia do trecho mantido ${segmentIndex + 1} de ${clip.file.name}`);
+        play.dataset.clipIndex = String(index);
+        play.dataset.segmentIndex = String(segmentIndex);
+        row.append(segmentName, startLabel, endLabel, play);
+        segmentList.append(row);
+      });
+      item.append(cardHead, timeline, segmentList);
       cutsList.append(item);
     });
+    reviewSummary.textContent = isEnglish
+      ? `${analysis.clips.length} clips · ${formatDuration(totalOriginal)} original · ${formatDuration(totalKept)} kept · ${formatDuration(Math.max(0, totalOriginal - totalKept))} removed`
+      : `${analysis.clips.length} clipes · ${formatDuration(totalOriginal)} originais · ${formatDuration(totalKept)} mantidos · ${formatDuration(Math.max(0, totalOriginal - totalKept))} removidos`;
     results.classList.remove('utility-hidden');
+  }
+
+  function updateSegment(inputEl) {
+    const clip = analysis?.clips[Number(inputEl.dataset.clipIndex)];
+    const segmentIndex = Number(inputEl.dataset.segmentIndex);
+    if (!clip || !Number.isInteger(segmentIndex)) return;
+    const segments = clip.segments;
+    const current = segments[segmentIndex];
+    const startInput = cutsList.querySelector(`input[data-clip-index="${inputEl.dataset.clipIndex}"][data-segment-index="${segmentIndex}"][data-edge="start"]`);
+    const endInput = cutsList.querySelector(`input[data-clip-index="${inputEl.dataset.clipIndex}"][data-segment-index="${segmentIndex}"][data-edge="end"]`);
+    const start = Number(startInput.value);
+    const end = Number(endInput.value);
+    const lowerBound = segmentIndex ? segments[segmentIndex - 1].end : 0;
+    const upperBound = segmentIndex < segments.length - 1 ? segments[segmentIndex + 1].start : clip.info.duration;
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start < lowerBound || end > upperBound || end - start < 0.15) {
+      setStatus(isEnglish ? 'Use valid times, leave at least 0.15 seconds, and keep segments in order.' : 'Use tempos válidos, mantenha ao menos 0,15 segundo e não sobreponha os trechos.', 'warning');
+      createCutsList();
+      return;
+    }
+    current.start = start;
+    current.end = end;
+    createCutsList();
+    setStatus(isEnglish ? 'Cut updated. Preview it or continue when ready.' : 'Corte atualizado. Confira a prévia ou continue quando quiser.');
+  }
+
+  async function previewSegment(button) {
+    const clip = analysis?.clips[Number(button.dataset.clipIndex)];
+    const segment = clip?.segments[Number(button.dataset.segmentIndex)];
+    if (!clip || !segment) return;
+    const requestId = ++previewRequestId;
+    previewStopAt = segment.end;
+    sourcePreviewWrap.hidden = false;
+    sourceCaption.textContent = isEnglish
+      ? `Previewing ${clip.file.name} from ${formatSeconds(segment.start)} to ${formatSeconds(segment.end)}.`
+      : `Prévia de ${clip.file.name}, de ${formatSeconds(segment.start)} a ${formatSeconds(segment.end)}.`;
+    sourceVideo.pause();
+    if (sourceVideo.src !== clip.previewUrl) {
+      sourceVideo.src = clip.previewUrl;
+      sourceVideo.load();
+    }
+    const play = async () => {
+      if (requestId !== previewRequestId) return;
+      sourceVideo.currentTime = segment.start;
+      try { await sourceVideo.play(); }
+      catch (_) { setStatus(isEnglish ? 'Press play in the preview to check this segment.' : 'Use o botão de reprodução da prévia para conferir este trecho.', 'warning'); }
+    };
+    if (sourceVideo.readyState >= 1) await play();
+    else sourceVideo.addEventListener('loadedmetadata', play, { once: true });
   }
 
   async function analyzeClips() {
@@ -471,7 +596,6 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
     } catch (error) {
       const message = error?.message || '';
       if (message === 'missing-audio') setStatus(copy.noAudio, 'error');
-      else if (message === 'too-long') setStatus(copy.tooLong, 'error');
       else if (message === 'total-too-long') setStatus(copy.totalTooLong, 'error');
       else if (/memory|allocation/i.test(message)) setStatus(copy.memoryError, 'error');
       else if (message === 'bad-video') setStatus(copy.badVideo, 'error');
@@ -577,12 +701,31 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
   resetButton.addEventListener('click', resetClips);
   analyzeButton.addEventListener('click', analyzeClips);
   createButton.addEventListener('click', createVideo);
+  cutsList.addEventListener('change', (event) => {
+    if (event.target instanceof HTMLInputElement && event.target.dataset.edge) updateSegment(event.target);
+  });
+  cutsList.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-segment-index]');
+    if (button) previewSegment(button);
+  });
+  sourceVideo.addEventListener('timeupdate', () => {
+    if (previewStopAt !== null && sourceVideo.currentTime >= previewStopAt) {
+      sourceVideo.pause();
+      previewStopAt = null;
+    }
+  });
+  const updateSensitivityLabel = () => {
+    const value = Number(sensitivityInput.value);
+    sensitivityValue.textContent = `${value < 0 ? '−' : ''}${Math.abs(value)} dB`;
+  };
+  sensitivityInput.addEventListener('input', updateSensitivityLabel);
+  updateSensitivityLabel();
   const settingsChanged = () => {
     if (!analysis) return;
     invalidateAnalysis();
     setStatus(isEnglish ? 'Settings changed. Analyze the cuts again before creating the video.' : 'Os ajustes mudaram. Analise os cortes novamente antes de criar o vídeo.', 'warning');
   };
-  [fadeInput, transitionInput, pauseInput, marginStartInput, marginEndInput].forEach((field) => {
+  [fadeInput, transitionInput, pauseInput, marginStartInput, marginEndInput, sensitivityInput].forEach((field) => {
     field.addEventListener('input', settingsChanged);
     field.addEventListener('change', settingsChanged);
   });
@@ -600,6 +743,9 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
   });
   window.addEventListener('pagehide', () => {
     if (outputUrl) URL.revokeObjectURL(outputUrl);
+    clips.forEach((clip) => { if (clip.previewUrl) URL.revokeObjectURL(clip.previewUrl); });
     if (ffmpeg) ffmpeg.terminate();
   }, { once: true });
 })();
+
+
