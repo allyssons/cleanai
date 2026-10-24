@@ -26,7 +26,7 @@ A política `privacidade.html` informa sobre cookies, personalização de anúnc
 
 - Imagens: JPEG, PNG e WebP; reexportar pode recomprimir JPEG e alterar levemente tamanho, cor ou qualidade. HEIC/HEIF e TIFF não são aceitos.
 - Metadados de vídeo: MP4/MOV de até 200 MB; a limpeza é limitada aos campos reconhecidos. Credenciais C2PA reconhecíveis bloqueiam a limpeza e marcas d'água nos quadros não são removidas.
-- Juntador de vídeos: 2 a 6 arquivos MP4/MOV com áudio, até 100 MB por clipe, 250 MB no total e 15 minutos combinados. A saída é recodificada localmente para MP4; o motor FFmpeg WebAssembly pode usar bastante memória e levar tempo, especialmente em celulares. Os clipes escolhidos não são enviados ao site nem ao CDN.
+- Juntador de vídeos: 2 a 6 arquivos MP4/MOV com áudio, até 200 MB por clipe, 500 MB no total e 15 minutos combinados. A saída é recodificada localmente para MP4; o motor FFmpeg WebAssembly pode usar bastante memória e levar tempo, especialmente em celulares. Os clipes escolhidos não são enviados ao site nem ao CDN.
 - Metadados: remove dados que o navegador não replica ao reexportar; não remove marcas d'água incorporadas aos pixels nem garante rótulos de plataformas.
 - Textos: texto colado ou arquivo `.txt`/`.md` de até 1 MB, com limite de 20.000 palavras. A ferramenta limpa caracteres Unicode invisíveis comuns e normaliza espaços especiais; não reescreve, não detecta autoria e não remove marcas estatísticas baseadas na escolha das palavras.
 - Juntadores importantes para idiomas e emojis são preservados por padrão. Remover controles de direção é uma opção avançada que pode alterar a exibição de idiomas RTL.

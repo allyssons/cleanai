@@ -2,15 +2,15 @@
   'use strict';
 
   const MAX_FILES = 6;
-  const MAX_FILE_BYTES = 100 * 1024 * 1024;
-  const MAX_TOTAL_BYTES = 250 * 1024 * 1024;
+  const MAX_FILE_BYTES = 200 * 1024 * 1024;
+  const MAX_TOTAL_BYTES = 500 * 1024 * 1024;
   const MAX_DURATION = 10 * 60;
   const MAX_TOTAL_DURATION = 15 * 60;
 const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
   const FFmpegScript = '/vendor/ffmpeg/ffmpeg.js';
   const isEnglish = document.documentElement.lang.toLowerCase().startsWith('en');
   const copy = isEnglish ? {
-    tooMany: 'Choose up to six video files.', tooLarge: 'Each video must be 100 MB or smaller.', totalLarge: 'The combined file size must be 250 MB or smaller.',
+    tooMany: 'Choose up to six video files.', tooLarge: 'Each video must be 200 MB or smaller.', totalLarge: 'The combined file size must be 500 MB or smaller.',
     invalid: 'Choose MP4 or MOV files with audio.', empty: 'This file is empty.',
     ready: 'Files are ready. Arrange their order, then analyze the cuts.',
     library: 'Loading the video engine (about 31 MB). This happens only when you start the tool.',
@@ -29,7 +29,7 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
     removed: 'removed at the edges', noSpeech: 'No clear speech segment was detected; keeps the full clip.',
     selectionRequired: 'Add at least two clips to continue.', progress: 'Working locally in your browser. Processing time depends on your device and video length.'
   } : {
-    tooMany: 'Escolha até seis vídeos.', tooLarge: 'Cada vídeo precisa ter até 100 MB.', totalLarge: 'O tamanho total dos arquivos precisa ser de até 250 MB.',
+    tooMany: 'Escolha até seis vídeos.', tooLarge: 'Cada vídeo precisa ter até 200 MB.', totalLarge: 'O tamanho total dos arquivos precisa ser de até 500 MB.',
     invalid: 'Escolha arquivos MP4 ou MOV com áudio.', empty: 'Este arquivo está vazio.',
     ready: 'Arquivos prontos. Organize a ordem e analise os cortes.',
     library: 'Carregando o mecanismo de vídeo (cerca de 31 MB). Isso acontece somente ao iniciar a ferramenta.',
