@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Juntar vídeos online e cortar silêncios | Higienizador IA</title>
-  <meta name="description" content="Junte vídeos MP4 e MOV, corte silêncios no começo e no fim e aplique transições suaves. Processamento local no navegador, sem enviar os arquivos.">
+  <meta name="description" content="Junte vídeos MP4 e MOV, corte silêncios e escolha corte seco, dissolução ou passagem pelo preto. Processamento local no navegador, sem enviar os arquivos.">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <link rel="canonical" href="https://ferramentasgratis.com/juntar-videos">
   <link rel="alternate" hreflang="pt-BR" href="https://ferramentasgratis.com/juntar-videos">
@@ -11,25 +11,26 @@
   <link rel="alternate" hreflang="x-default" href="https://ferramentasgratis.com/juntar-videos">
   <meta property="og:type" content="website"><meta property="og:locale" content="pt_BR"><meta property="og:site_name" content="Higienizador de IA">
   <meta property="og:title" content="Juntar vídeos e cortar silêncios no navegador">
-  <meta property="og:description" content="Organize clipes MP4/MOV, encontre silêncios e crie um vídeo com transições suaves. Seus arquivos ficam no aparelho.">
+  <meta property="og:description" content="Organize clipes MP4/MOV, encontre silêncios e escolha corte seco, dissolução ou passagem pelo preto. Seus arquivos ficam no aparelho.">
   <meta property="og:url" content="https://ferramentasgratis.com/juntar-videos"><meta name="twitter:card" content="summary">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Juntar vídeos e cortar silêncios","url":"https://ferramentasgratis.com/juntar-videos","inLanguage":"pt-BR","applicationCategory":"MultimediaApplication","operatingSystem":"Any","description":"Ferramenta gratuita para juntar clipes MP4 e MOV, detectar silêncios nas bordas e aplicar transições suaves localmente no navegador.","browserRequirements":"Navegador moderno com suporte a WebAssembly, memória suficiente e conexão para carregar a biblioteca de vídeo sob demanda","offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Juntar vídeos e cortar silêncios","url":"https://ferramentasgratis.com/juntar-videos","inLanguage":"pt-BR","applicationCategory":"MultimediaApplication","operatingSystem":"Any","description":"Ferramenta gratuita para juntar clipes MP4 e MOV, detectar silêncios nas bordas e escolher corte seco, dissolução ou passagem pelo preto no navegador.","browserRequirements":"Navegador moderno com suporte a WebAssembly, memória suficiente e conexão para carregar a biblioteca de vídeo sob demanda","offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Início","item":"https://ferramentasgratis.com/"},{"@type":"ListItem","position":2,"name":"Juntar vídeos","item":"https://ferramentasgratis.com/juntar-videos"}]}</script>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/styles.css?v=11"><link rel="stylesheet" href="/tools-extra.css?v=5">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/styles.css?v=11"><link rel="stylesheet" href="/tools-extra.css?v=6">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1803254373578705" crossorigin="anonymous"></script>
-  <script src="/video-joiner.js?v=3" defer></script>
+  <script src="/video-joiner.js?v=4" defer></script>
 </head>
 <body class="article-page">
   <header class="site-header"><a class="brand" href="/" aria-label="Higienizador IA — início"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>Higienizador <span class="brand-accent">IA</span></span></a><nav class="main-nav" aria-label="Navegação principal"><a href="/#ferramenta">Imagens</a><a href="/#texto">Textos</a><a href="/#ferramentas-documentos">Mais ferramentas</a><a href="/#perguntas">Perguntas</a></nav><a class="header-cta" href="/#ferramentas-documentos">Mais ferramentas <span aria-hidden="true">↘</span></a></header>
   <main class="section-shell article-content utility-page joiner-page">
     <nav class="breadcrumbs" aria-label="Você está aqui"><a href="/">Início</a><span aria-hidden="true">/</span><span>Juntar vídeos</span></nav>
-    <div class="utility-hero"><div class="eyebrow">EDIÇÃO LOCAL DE VÍDEOS</div><h1>Junte vídeos e corte silêncios automaticamente</h1><p class="article-lead">Coloque seus clipes na ordem, revise os cortes encontrados e crie um MP4 com transições suaves. O processamento roda no navegador; seus vídeos não são enviados para o site.</p></div>
+    <div class="utility-hero"><div class="eyebrow">EDIÇÃO LOCAL DE VÍDEOS</div><h1>Junte vídeos e corte silêncios automaticamente</h1><p class="article-lead">Coloque os clipes na ordem, revise os cortes e escolha entre corte seco, dissolução ou passagem pelo preto. O processamento roda no navegador; seus vídeos não são enviados para o site.</p></div>
     <section class="utility-panel" aria-label="Juntador de vídeos">
       <div class="utility-panel-head"><div><h2>Monte seu vídeo</h2><p>De 2 a 6 arquivos · MP4 ou MOV com áudio · até 200 MB por arquivo, 500 MB no total e 15 minutos combinados</p></div><span class="utility-lock"><b aria-hidden="true">◈</b> Arquivos ficam no aparelho</span></div>
       <div class="utility-dropzone" id="joinerDropzone"><strong>Escolha ou arraste seus clipes</strong><p>A ordem da lista será a ordem do vídeo final. O original nunca é alterado.</p><button class="button button-secondary" type="button" id="joinerChoose">Escolher vídeos</button><input id="joinerFiles" type="file" accept="video/mp4,video/quicktime,.mp4,.mov" multiple hidden></div>
       <section class="joiner-selection utility-hidden" id="joinerSelection" aria-label="Ordem dos vídeos"><div class="joiner-section-head"><h3>Ordem dos clipes</h3><span id="joinerCount"></span></div><ol class="joiner-order" id="joinerOrder"></ol><button class="quiet-button" type="button" id="joinerReset">Remover todos</button></section>
       <details class="joiner-settings"><summary>Ajustar cortes e transição</summary><div class="joiner-options">
-        <label>Transição entre clipes <span><input id="joinerFade" type="number" min="0.1" max="1.5" step="0.1" value="0.5"> s</span><small>Sobreposição gradual de imagem e áudio.</small></label>
+        <label>Estilo de transição <span><select id="joinerTransition"><option value="fade">Dissolver</option><option value="fadeblack">Passar pelo preto</option><option value="cut">Corte seco</option></select></span><small>Dissolver e passar pelo preto mantêm uma sobreposição suave de áudio; no corte seco, imagem e áudio trocam instantaneamente.</small></label>
+        <label>Duração da transição <span><input id="joinerFade" type="number" min="0.1" max="1.5" step="0.1" value="0.5"> s</span><small>Usada na dissolução e na passagem pelo preto; não afeta o corte seco.</small></label>
         <label>Pausa que ainda será mantida <span><input id="joinerPause" type="number" min="0.2" max="2" step="0.1" value="0.8"> s</span><small>Pausas menores são agrupadas dentro de uma fala.</small></label>
         <label>Folga antes da primeira fala <span><input id="joinerMarginStart" type="number" min="0" max="1.5" step="0.05" value="0.35"> s</span><small>Evita cortar a primeira palavra.</small></label>
         <label>Folga depois da última fala <span><input id="joinerMarginEnd" type="number" min="0" max="1.5" step="0.05" value="0.4"> s</span><small>Evita cortar o fim da última palavra.</small></label>

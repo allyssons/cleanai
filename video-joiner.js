@@ -69,6 +69,7 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
   const video = $('joinerVideo');
   const downloadLink = $('joinerDownload');
   const fadeInput = $('joinerFade');
+  const transitionInput = $('joinerTransition');
   const pauseInput = $('joinerPause');
   const marginStartInput = $('joinerMarginStart');
   const marginEndInput = $('joinerMarginEnd');
@@ -382,6 +383,7 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
     };
     return {
       fade: number(fadeInput, 0.5, 0.1, 1.5),
+      transition: ['cut', 'fadeblack'].includes(transitionInput.value) ? transitionInput.value : 'fade',
       joinPause: number(pauseInput, 0.8, 0.2, 2),
       marginStart: number(marginStartInput, 0.35, 0, 1.5),
       marginEnd: number(marginEndInput, 0.4, 0, 1.5),
@@ -467,7 +469,7 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
     }
   }
 
-  function buildFilterGraph(items, width, height, fade) {
+  function buildFilterGraph(items, width, height, fade, transition) {
     const filters = [];
     const durations = [];
     items.forEach((clip, index) => {
@@ -478,12 +480,18 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
       filters.push(`[${index}:v]trim=start=${start}:end=${end},setpts=PTS-STARTPTS,scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p[v${index}]`);
       filters.push(`[${index}:a]atrim=start=${start}:end=${end},asetpts=PTS-STARTPTS,aresample=44100,aformat=channel_layouts=stereo[a${index}]`);
     });
+    if (transition === 'cut') {
+      const segmentInputs = items.map((_, index) => `[v${index}][a${index}]`).join('');
+      filters.push(`${segmentInputs}concat=n=${items.length}:v=1:a=1[vjoined][ajoined]`);
+      return { graph: filters.join(';'), videoLabel: 'vjoined', audioLabel: 'ajoined' };
+    }
     let videoLabel = 'v0';
     let audioLabel = 'a0';
     let totalDuration = durations[0];
+    const videoTransition = transition === 'fadeblack' ? 'fadeblack' : 'fade';
     for (let index = 1; index < items.length; index += 1) {
       const offset = Math.max(0, totalDuration - fade);
-      filters.push(`[${videoLabel}][v${index}]xfade=transition=fade:duration=${fade.toFixed(3)}:offset=${offset.toFixed(3)}[xv${index}]`);
+      filters.push(`[${videoLabel}][v${index}]xfade=transition=${videoTransition}:duration=${fade.toFixed(3)}:offset=${offset.toFixed(3)}[xv${index}]`);
       filters.push(`[${audioLabel}][a${index}]acrossfade=d=${fade.toFixed(3)}[xa${index}]`);
       videoLabel = `xv${index}`;
       audioLabel = `xa${index}`;
@@ -501,7 +509,7 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
       const first = analysis.clips[0].info;
       const width = Math.max(2, first.width - (first.width % 2));
       const height = Math.max(2, first.height - (first.height % 2));
-      const { graph, videoLabel, audioLabel } = buildFilterGraph(analysis.clips, width, height, analysis.fade);
+      const { graph, videoLabel, audioLabel } = buildFilterGraph(analysis.clips, width, height, analysis.fade, analysis.settings.transition);
       const args = ['-y'];
       analysis.clips.forEach((clip) => args.push('-i', clip.engineName));
       args.push('-filter_complex', graph, '-map', `[${videoLabel}]`, '-map', `[${audioLabel}]`, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', 'joined-output.mp4');
@@ -530,11 +538,15 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
   resetButton.addEventListener('click', resetClips);
   analyzeButton.addEventListener('click', analyzeClips);
   createButton.addEventListener('click', createVideo);
-  [fadeInput, pauseInput, marginStartInput, marginEndInput].forEach((field) => field.addEventListener('input', () => {
+  const settingsChanged = () => {
     if (!analysis) return;
     invalidateAnalysis();
     setStatus(isEnglish ? 'Settings changed. Analyze the cuts again before creating the video.' : 'Os ajustes mudaram. Analise os cortes novamente antes de criar o vídeo.', 'warning');
-  }));
+  };
+  [fadeInput, transitionInput, pauseInput, marginStartInput, marginEndInput].forEach((field) => {
+    field.addEventListener('input', settingsChanged);
+    field.addEventListener('change', settingsChanged);
+  });
   ['dragenter', 'dragover'].forEach((eventName) => dropzone.addEventListener(eventName, (event) => {
     event.preventDefault();
     dropzone.classList.add('is-dragging');
