@@ -25,8 +25,8 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
     renderError: 'The browser could not finish this video. Try fewer or smaller clips on a computer.',
     memoryError: 'The browser ran out of memory. Try fewer or smaller clips, or close other tabs.',
     analyzingButton: 'Analyzing…', creatingButton: 'Creating video…', loadingButton: 'Preparing…',
-    up: 'Move up', down: 'Move down', remove: 'Remove', clip: 'Clip', cut: 'Cut', keeps: 'Keeps', starts: 'from', ends: 'to', full: 'No edge silence found; keeps the full clip.',
-    removed: 'removed at the edges', noSpeech: 'No clear speech segment was detected; keeps the full clip.',
+    up: 'Move up', down: 'Move down', remove: 'Remove', clip: 'Clip', cut: 'Cut', keeps: 'Keeps', starts: 'from', ends: 'to', full: 'No long silence above the selected limit was found; keeps the full clip.',
+    removed: 'removed at the edges', noSpeech: 'No clear audio segment was found; keeps the full clip.',
     selectionRequired: 'Add at least two clips to continue.', progress: 'Working locally in your browser. Processing time depends on your device and video length.'
   } : {
     tooMany: 'Escolha até seis vídeos.', tooLarge: 'Cada vídeo precisa ter até 200 MB.', totalLarge: 'O tamanho total dos arquivos precisa ser de até 500 MB.',
@@ -44,8 +44,8 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
     renderError: 'O navegador não conseguiu terminar este vídeo. Tente menos clipes ou arquivos menores em um computador.',
     memoryError: 'O navegador ficou sem memória. Tente menos clipes ou arquivos menores e feche outras abas.',
     analyzingButton: 'Analisando…', creatingButton: 'Criando vídeo…', loadingButton: 'Preparando…',
-    up: 'Mover para cima', down: 'Mover para baixo', remove: 'Remover', clip: 'Clipe', cut: 'Corte', keeps: 'Mantém', starts: 'de', ends: 'a', full: 'Nenhum silêncio de borda encontrado; mantém o clipe inteiro.',
-    removed: 'removidos nas bordas', noSpeech: 'Não encontramos fala clara; o clipe inteiro será mantido.',
+    up: 'Mover para cima', down: 'Mover para baixo', remove: 'Remover', clip: 'Clipe', cut: 'Corte', keeps: 'Mantém', starts: 'de', ends: 'a', full: 'Nenhuma pausa acima do limite escolhido foi encontrada; mantém o clipe inteiro.',
+    removed: 'removidos nas bordas', noSpeech: 'Não encontramos trechos claros com áudio; o clipe inteiro será mantido.',
     selectionRequired: 'Adicione pelo menos dois clipes para continuar.', progress: 'Processamento local no navegador. O tempo depende do aparelho e da duração dos vídeos.'
   };
 
@@ -350,30 +350,35 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
 
   function speechRanges(silences, duration, settings) {
     let cursor = 0;
-    let speech = [];
+    const speech = [];
     silences.sort((a, b) => a[0] - b[0]).forEach(([start, end]) => {
       if (start - cursor > 0.001) speech.push([cursor, start]);
       cursor = Math.max(cursor, end);
     });
     if (duration - cursor > 0.001) speech.push([cursor, duration]);
-    speech = speech.filter(([start, end]) => end - start >= 0.15);
-
-    if (speech.length > 1) {
-      const [start, end] = speech[0];
-      if (start < 0.15 && end - start < 1.2 && speech[1][0] - end >= 1) speech.shift();
-    }
-    if (speech.length > 1) {
-      const [start, end] = speech[speech.length - 1];
-      if (duration - end < 0.15 && end - start < 1.2 && start - speech[speech.length - 2][1] >= 1) speech.pop();
-    }
-
+    const usableSpeech = speech.filter(([start, end]) => end - start >= 0.15);
     const merged = [];
-    speech.forEach(([start, end]) => {
+    usableSpeech.forEach(([start, end]) => {
       const previous = merged[merged.length - 1];
       if (previous && start - previous[1] < settings.joinPause) previous[1] = end;
       else merged.push([start, end]);
     });
-    return merged.filter(([start, end]) => end - start >= 0.6);
+    return merged;
+  }
+
+  function keepSegments(speech, duration, settings) {
+    if (!speech.length) return [{ start: 0, end: duration }];
+    const segments = speech.map(([start, end]) => ({
+      start: Math.max(0, start - settings.marginStart),
+      end: Math.min(duration, end + settings.marginEnd)
+    }));
+    const merged = [];
+    segments.forEach((segment) => {
+      const previous = merged[merged.length - 1];
+      if (previous && segment.start <= previous.end) previous.end = Math.max(previous.end, segment.end);
+      else merged.push(segment);
+    });
+    return merged;
   }
 
   function getSettings() {
@@ -381,14 +386,15 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
       const value = Number(inputEl.value);
       return Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback;
     };
+    const joinPause = number(pauseInput, 0.8, 0.2, 2);
     return {
       fade: number(fadeInput, 0.5, 0.1, 1.5),
       transition: ['cut', 'fadeblack'].includes(transitionInput.value) ? transitionInput.value : 'fade',
-      joinPause: number(pauseInput, 0.8, 0.2, 2),
+      joinPause,
       marginStart: number(marginStartInput, 0.35, 0, 1.5),
       marginEnd: number(marginEndInput, 0.4, 0, 1.5),
       noiseDb: -35,
-      minSilence: 0.4
+      minSilence: Math.min(0.4, joinPause)
     };
   }
 
@@ -399,11 +405,19 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
       const heading = document.createElement('strong');
       heading.textContent = `${copy.clip} ${index + 1}: ${clip.file.name}`;
       const detail = document.createElement('span');
+      const segments = clip.segments;
+      const keptDuration = segments.reduce((sum, segment) => sum + segment.end - segment.start, 0);
+      const removedDuration = Math.max(0, clip.info.duration - keptDuration);
       if (clip.fallback) detail.textContent = `${copy.noSpeech} ${formatDuration(clip.info.duration)}`;
-      else if (Math.abs(clip.start) < 0.005 && Math.abs(clip.end - clip.info.duration) < 0.005) detail.textContent = `${copy.full} ${formatDuration(clip.info.duration)}`;
-      else detail.textContent = isEnglish
-        ? `Keeps ${formatSeconds(clip.start)}–${formatSeconds(clip.end)} (${formatDuration(clip.end - clip.start)}); trims ${formatDuration(clip.start + clip.info.duration - clip.end)} at the edges.`
-        : `Mantém ${formatSeconds(clip.start)}–${formatSeconds(clip.end)} (${formatDuration(clip.end - clip.start)}); remove ${formatDuration(clip.start + clip.info.duration - clip.end)} nas bordas.`;
+      else if (removedDuration < 0.05) detail.textContent = `${copy.full} ${formatDuration(clip.info.duration)}`;
+      else {
+        const shownSegments = segments.slice(0, 4).map((segment) => `${formatSeconds(segment.start)}–${formatSeconds(segment.end)}`);
+        const extraSegments = segments.length - shownSegments.length;
+        const segmentSummary = `${shownSegments.join('; ')}${extraSegments > 0 ? (isEnglish ? `; +${extraSegments} more` : `; +${extraSegments} trechos`) : ''}`;
+        detail.textContent = isEnglish
+          ? `Keeps ${segmentSummary} (${formatDuration(keptDuration)} total); cuts ${formatDuration(removedDuration)} of silence.`
+          : `Mantém ${segmentSummary} (${formatDuration(keptDuration)} no total); corta ${formatDuration(removedDuration)} de silêncio.`;
+      }
       item.append(heading, detail);
       cutsList.append(item);
     });
@@ -440,16 +454,15 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
         const silences = await detectSilences(clip, settings);
         const speech = speechRanges(silences, clip.info.duration, settings);
         clip.fallback = speech.length === 0;
-        clip.start = speech.length ? Math.max(0, speech[0][0] - settings.marginStart) : 0;
-        clip.end = speech.length ? Math.min(clip.info.duration, speech[speech.length - 1][1] + settings.marginEnd) : clip.info.duration;
-        if (clip.end - clip.start < 0.5) {
-          clip.start = 0;
-          clip.end = clip.info.duration;
+        clip.segments = keepSegments(speech, clip.info.duration, settings);
+        const keptDuration = clip.segments.reduce((sum, segment) => sum + segment.end - segment.start, 0);
+        if (keptDuration < 0.5) {
+          clip.segments = [{ start: 0, end: clip.info.duration }];
           clip.fallback = true;
         }
       }
       if (runId !== currentRun) return;
-      const minDuration = Math.min(...clips.map((clip) => clip.end - clip.start));
+      const minDuration = Math.min(...clips.map((clip) => clip.segments.reduce((sum, segment) => sum + segment.end - segment.start, 0)));
       analysis = { clips: clips.slice(), settings, fade: Math.min(settings.fade, 0.45 * minDuration) };
       createCutsList();
       createButton.disabled = false;
@@ -472,27 +485,53 @@ const FFmpegBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';
   function buildFilterGraph(items, width, height, fade, transition) {
     const filters = [];
     const durations = [];
+    const clipLabels = [];
     items.forEach((clip, index) => {
-      const start = clip.start.toFixed(3);
-      const end = clip.end.toFixed(3);
-      const length = clip.end - clip.start;
-      durations.push(length);
-      filters.push(`[${index}:v]trim=start=${start}:end=${end},setpts=PTS-STARTPTS,scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p[v${index}]`);
-      filters.push(`[${index}:a]atrim=start=${start}:end=${end},asetpts=PTS-STARTPTS,aresample=44100,aformat=channel_layouts=stereo[a${index}]`);
+      const segments = clip.segments;
+      const videoInputs = segments.map((_, segmentIndex) => `v${index}in${segmentIndex}`);
+      const audioInputs = segments.map((_, segmentIndex) => `a${index}in${segmentIndex}`);
+      if (segments.length > 1) {
+        filters.push(`[${index}:v]split=${segments.length}${videoInputs.map((label) => `[${label}]`).join('')}`);
+        filters.push(`[${index}:a]asplit=${segments.length}${audioInputs.map((label) => `[${label}]`).join('')}`);
+      }
+      const videoSegments = [];
+      const audioSegments = [];
+      let clipDuration = 0;
+      segments.forEach((segment, segmentIndex) => {
+        const start = segment.start.toFixed(3);
+        const end = segment.end.toFixed(3);
+        clipDuration += segment.end - segment.start;
+        const videoInput = segments.length > 1 ? `[${videoInputs[segmentIndex]}]` : `[${index}:v]`;
+        const audioInput = segments.length > 1 ? `[${audioInputs[segmentIndex]}]` : `[${index}:a]`;
+        const videoOutput = `v${index}s${segmentIndex}`;
+        const audioOutput = `a${index}s${segmentIndex}`;
+        filters.push(`${videoInput}trim=start=${start}:end=${end},setpts=PTS-STARTPTS,scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p,settb=AVTB[${videoOutput}]`);
+        filters.push(`${audioInput}atrim=start=${start}:end=${end},asetpts=PTS-STARTPTS,aresample=44100,aformat=channel_layouts=stereo[${audioOutput}]`);
+        videoSegments.push(videoOutput);
+        audioSegments.push(audioOutput);
+      });
+      durations.push(clipDuration);
+      if (segments.length > 1) {
+        const concatInputs = segments.map((_, segmentIndex) => `[${videoSegments[segmentIndex]}][${audioSegments[segmentIndex]}]`).join('');
+        filters.push(`${concatInputs}concat=n=${segments.length}:v=1:a=1[cv${index}][ca${index}]`);
+        clipLabels.push({ video: `cv${index}`, audio: `ca${index}` });
+      } else {
+        clipLabels.push({ video: videoSegments[0], audio: audioSegments[0] });
+      }
     });
     if (transition === 'cut') {
-      const segmentInputs = items.map((_, index) => `[v${index}][a${index}]`).join('');
-      filters.push(`${segmentInputs}concat=n=${items.length}:v=1:a=1[vjoined][ajoined]`);
+      const clipInputs = clipLabels.map((labels) => `[${labels.video}][${labels.audio}]`).join('');
+      filters.push(`${clipInputs}concat=n=${items.length}:v=1:a=1[vjoined][ajoined]`);
       return { graph: filters.join(';'), videoLabel: 'vjoined', audioLabel: 'ajoined' };
     }
-    let videoLabel = 'v0';
-    let audioLabel = 'a0';
+    let videoLabel = clipLabels[0].video;
+    let audioLabel = clipLabels[0].audio;
     let totalDuration = durations[0];
     const videoTransition = transition === 'fadeblack' ? 'fadeblack' : 'fade';
     for (let index = 1; index < items.length; index += 1) {
       const offset = Math.max(0, totalDuration - fade);
-      filters.push(`[${videoLabel}][v${index}]xfade=transition=${videoTransition}:duration=${fade.toFixed(3)}:offset=${offset.toFixed(3)}[xv${index}]`);
-      filters.push(`[${audioLabel}][a${index}]acrossfade=d=${fade.toFixed(3)}[xa${index}]`);
+      filters.push(`[${videoLabel}][${clipLabels[index].video}]xfade=transition=${videoTransition}:duration=${fade.toFixed(3)}:offset=${offset.toFixed(3)}[xv${index}]`);
+      filters.push(`[${audioLabel}][${clipLabels[index].audio}]acrossfade=d=${fade.toFixed(3)}[xa${index}]`);
       videoLabel = `xv${index}`;
       audioLabel = `xa${index}`;
       totalDuration += durations[index] - fade;
