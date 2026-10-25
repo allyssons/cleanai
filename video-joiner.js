@@ -447,7 +447,7 @@
       const timeline = document.createElement('div');
       timeline.className = 'joiner-timeline';
       timeline.setAttribute('role', 'img');
-      timeline.setAttribute('aria-label', isEnglish ? 'Green sections are kept; gaps are removed.' : 'Trechos verdes são mantidos; os espaços são removidos.');
+      timeline.setAttribute('aria-label', isEnglish ? 'Green sections are kept, red sections are permanently cut, and striped gaps are removed.' : 'Trechos verdes são mantidos, trechos vermelhos são cortados definitivamente e os espaços listrados são removidos.');
       (clip.excludedSegments || []).forEach((segment) => {
         const cut = document.createElement('span');
         cut.className = 'joiner-timeline-cut';
