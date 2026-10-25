@@ -1,6 +1,6 @@
-# Higienizador IA
+# Oficina Digital
 
-Site estático bilíngue para higienizar metadados comuns de imagens, vídeos MP4/MOV e documentos, caracteres invisíveis em textos e parâmetros de links, além de juntar clipes com cortes automáticos nas bordas e transições selecionáveis: corte seco, dissolução ou passagem pelo preto. Os arquivos selecionados são processados no navegador; não há API de processamento.
+Site estático bilíngue da Oficina Digital: ferramentas para higienizar metadados comuns de imagens, vídeos MP4/MOV e documentos, limpar caracteres invisíveis em textos e parâmetros de links, além de editar vídeos com cortes de silêncio. Os arquivos são processados localmente no navegador; não há API de processamento.
 
 ## Rodar localmente
 
@@ -37,4 +37,4 @@ A interface do juntador usa o wrapper `@ffmpeg/ffmpeg` 0.12.15, incluído em `ve
 
 ## Google Analytics 4
 
-A propriedade do Higienizador IA tem um fluxo da Web para `https://ferramentasgratis.com/`, com ID de medição `G-YXQQQTREZX`. O arquivo `privacy-consent.js` controla a etiqueta em todas as páginas: sem escolha ou após recusa, a etiqueta do Google Analytics não é carregada; a aceitação é registrada localmente por até 180 dias e pode ser revista pelo botão no rodapé. A configuração `cookie_domain: none` limita os cookies do GA4 ao hostname atual. A recusa ou retirada da escolha desativa a medição e tenta remover os cookies `_ga` deste navegador. A configuração do GA4 não envia os conteúdos das imagens ou textos processados.
+A propriedade da Oficina Digital tem um fluxo da Web para `https://ferramentasgratis.com/`, com ID de medição `G-YXQQQTREZX`. O arquivo `privacy-consent.js` controla a etiqueta em todas as páginas: sem escolha ou após recusa, a etiqueta do Google Analytics não é carregada; a aceitação é registrada localmente por até 180 dias e pode ser revista pelo botão no rodapé. A configuração `cookie_domain: none` limita os cookies do GA4 ao hostname atual. A recusa ou retirada da escolha desativa a medição e tenta remover os cookies `_ga` deste navegador. A configuração do GA4 não envia os conteúdos das imagens ou textos processados.

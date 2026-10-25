@@ -25,6 +25,8 @@
     analyzingButton: 'Analyzing…', creatingButton: 'Creating video…', loadingButton: 'Preparing…',
     up: 'Move up', down: 'Move down', remove: 'Remove', clip: 'Clip', cut: 'Cut', keeps: 'Keeps', starts: 'from', ends: 'to', full: 'No long silence above the selected limit was found; keeps the full clip.',
     removed: 'removed', noSpeech: 'No clear audio segment was found; keeps the full clip.',
+    removeSegment: 'Delete segment', segmentDeleted: 'Segment deleted. This clip will be skipped if no kept segments remain.',
+    emptyClip: 'No segments kept; this clip will be skipped in the final video.', noSegments: 'Keep at least one segment before creating the video.',
     selectionRequired: 'Add at least two clips to continue.', progress: 'Working locally in your browser. Processing time depends on your device and video length.'
   } : {
     tooMany: 'Escolha até seis vídeos.', tooLarge: 'Cada vídeo precisa ter até 200 MB.', totalLarge: 'O tamanho total dos arquivos precisa ser de até 500 MB.',
@@ -43,6 +45,8 @@
     analyzingButton: 'Analisando…', creatingButton: 'Criando vídeo…', loadingButton: 'Preparando…',
     up: 'Mover para cima', down: 'Mover para baixo', remove: 'Remover', clip: 'Clipe', cut: 'Corte', keeps: 'Mantém', starts: 'de', ends: 'a', full: 'Nenhuma pausa acima do limite escolhido foi encontrada; mantém o clipe inteiro.',
     removed: 'removidos', noSpeech: 'Não encontramos trechos claros com áudio; o clipe inteiro será mantido.',
+    removeSegment: 'Excluir trecho', segmentDeleted: 'Trecho excluído. Se nenhum trecho restar, este clipe será ignorado no vídeo final.',
+    emptyClip: 'Nenhum trecho mantido; este clipe será ignorado no vídeo final.', noSegments: 'Mantenha ao menos um trecho antes de criar o vídeo.',
     selectionRequired: 'Adicione pelo menos dois clipes para continuar.', progress: 'Processamento local no navegador. O tempo depende do aparelho e da duração dos vídeos.'
   };
 
@@ -98,7 +102,7 @@
     running = value;
     progress.classList.toggle('utility-hidden', !value);
     analyzeButton.disabled = value || clips.length < 2;
-    createButton.disabled = value || !analysis;
+    createButton.disabled = value || !analysis || !analysis.clips.some((clip) => clip.segments.length > 0);
     choose.disabled = value;
     resetButton.disabled = value;
   }
@@ -429,7 +433,8 @@
       const removedDuration = Math.max(0, clip.info.duration - keptDuration);
       totalOriginal += clip.info.duration;
       totalKept += keptDuration;
-      if (clip.fallback) detail.textContent = `${copy.noSpeech} ${formatDuration(clip.info.duration)}`;
+      if (!segments.length) detail.textContent = copy.emptyClip;
+      else if (clip.fallback) detail.textContent = `${copy.noSpeech} ${formatDuration(clip.info.duration)}`;
       else if (removedDuration < 0.05) detail.textContent = `${copy.full} ${formatDuration(clip.info.duration)}`;
       else {
         detail.textContent = isEnglish
@@ -489,7 +494,15 @@
         play.setAttribute('aria-label', isEnglish ? `Preview kept segment ${segmentIndex + 1} in ${clip.file.name}` : `Prévia do trecho mantido ${segmentIndex + 1} de ${clip.file.name}`);
         play.dataset.clipIndex = String(index);
         play.dataset.segmentIndex = String(segmentIndex);
-        row.append(segmentName, startLabel, endLabel, play);
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'quiet-button joiner-segment-remove';
+        remove.textContent = isEnglish ? 'Delete' : 'Excluir';
+        remove.setAttribute('aria-label', `${copy.removeSegment} ${segmentIndex + 1} ${isEnglish ? 'in' : 'do'} ${clip.file.name}`);
+        remove.dataset.action = 'remove-segment';
+        remove.dataset.clipIndex = String(index);
+        remove.dataset.segmentIndex = String(segmentIndex);
+        row.append(segmentName, startLabel, endLabel, play, remove);
         segmentList.append(row);
       });
       item.append(cardHead, timeline, segmentList);
@@ -499,6 +512,22 @@
       ? `${analysis.clips.length} clips · ${formatDuration(totalOriginal)} original · ${formatDuration(totalKept)} kept · ${formatDuration(Math.max(0, totalOriginal - totalKept))} removed`
       : `${analysis.clips.length} clipes · ${formatDuration(totalOriginal)} originais · ${formatDuration(totalKept)} mantidos · ${formatDuration(Math.max(0, totalOriginal - totalKept))} removidos`;
     results.classList.remove('utility-hidden');
+    createButton.disabled = !analysis.clips.some((clip) => clip.segments.length > 0);
+  }
+
+  function removeSegment(button) {
+    const clip = analysis?.clips[Number(button.dataset.clipIndex)];
+    const segmentIndex = Number(button.dataset.segmentIndex);
+    if (!clip || !Number.isInteger(segmentIndex) || !clip.segments[segmentIndex] || running) return;
+    clip.segments.splice(segmentIndex, 1);
+    clip.fallback = false;
+    previewRequestId += 1;
+    previewStopAt = null;
+    sourceVideo.pause();
+    sourcePreviewWrap.hidden = true;
+    createCutsList();
+    setWorking(false);
+    setStatus(copy.segmentDeleted, clip.segments.length ? '' : 'warning');
   }
 
   function updateSegment(inputEl) {
@@ -665,16 +694,21 @@
 
   async function createVideo() {
     if (running || !analysis || !ffmpeg) return;
+    const exportClips = analysis.clips.filter((clip) => clip.segments.length > 0);
+    if (!exportClips.length) {
+      setStatus(copy.noSegments, 'warning');
+      return;
+    }
     const runId = ++currentRun;
     setWorking(true);
     setStatus(copy.creating, 'busy');
     try {
-      const first = analysis.clips[0].info;
+      const first = exportClips[0].info;
       const width = Math.max(2, first.width - (first.width % 2));
       const height = Math.max(2, first.height - (first.height % 2));
-      const { graph, videoLabel, audioLabel } = buildFilterGraph(analysis.clips, width, height, analysis.fade, analysis.settings.transition);
+      const { graph, videoLabel, audioLabel } = buildFilterGraph(exportClips, width, height, analysis.fade, analysis.settings.transition);
       const args = ['-y'];
-      analysis.clips.forEach((clip) => args.push('-i', clip.engineName));
+      exportClips.forEach((clip) => args.push('-i', clip.engineName));
       args.push('-filter_complex', graph, '-map', `[${videoLabel}]`, '-map', `[${audioLabel}]`, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', 'joined-output.mp4');
       await ffmpeg.exec(args);
       const data = await ffmpeg.readFile('joined-output.mp4');
@@ -706,7 +740,9 @@
   });
   cutsList.addEventListener('click', (event) => {
     const button = event.target.closest('button[data-segment-index]');
-    if (button) previewSegment(button);
+    if (!button) return;
+    if (button.dataset.action === 'remove-segment') removeSegment(button);
+    else previewSegment(button);
   });
   sourceVideo.addEventListener('timeupdate', () => {
     if (previewStopAt !== null && sourceVideo.currentTime >= previewStopAt) {
