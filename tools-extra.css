@@ -114,3 +114,37 @@
 @media(max-width:900px){.utility-directory#ferramentas-documentos .utility-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.utility-directory#ferramentas-documentos .utility-cards,#more-tools .utility-cards{grid-template-columns:1fr}.joiner-options{grid-template-columns:1fr}.joiner-file{grid-template-columns:30px minmax(0,1fr) auto;gap:7px;padding:8px}.joiner-file-controls{gap:1px}.joiner-file-controls .quiet-button{min-width:28px;padding:4px}.joiner-settings{padding:11px}.joiner-preview video{max-height:280px}}
 @media(prefers-reduced-motion:reduce){.joiner-progress i{animation:none}}
+
+/* Video joiner: make cut review a clear, editable part of the workflow. */
+.joiner-options input.joiner-range{grid-column:1/-1;width:100%;height:24px;min-height:24px;margin:0;padding:0;accent-color:#23785d;cursor:pointer}
+.joiner-options output{color:#244d3c;font-variant-numeric:tabular-nums;font-size:12px;font-weight:800}
+.joiner-review{margin-top:20px;padding:clamp(16px,3vw,24px);border:1px solid #d9e7da;border-radius:16px;background:linear-gradient(145deg,#f4f8f0 0%,#fffefa 72%);box-shadow:0 14px 34px rgba(39,78,58,.06)}
+.joiner-review-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.joiner-review-heading h3{margin:0;color:#203e31;font-size:clamp(18px,2vw,22px);letter-spacing:-.025em}
+.joiner-review-heading p{margin:7px 0 0;color:#486355;font-size:12px;font-variant-numeric:tabular-nums;line-height:1.55}
+.joiner-review-badge{flex:none;padding:7px 10px;border:1px solid #d8e7d8;border-radius:999px;background:#fffefa;color:#315d48;font-size:10px;font-weight:750}
+.joiner-review-help{margin:14px 0 0;color:#51675b;font-size:11px;line-height:1.65}
+.joiner-cuts{gap:12px;margin-top:12px}
+.joiner-cuts li.joiner-cut-card{gap:12px;padding:14px;border-color:#dfe8dd;border-radius:13px;background:#fffefa;box-shadow:0 4px 14px rgba(35,68,48,.035)}
+.joiner-cut-card-head{display:grid;gap:5px;min-width:0}
+.joiner-cut-card-head strong{color:#244735;font-size:13px;line-height:1.4}
+.joiner-cut-card-head>span{color:#5d7065;font-size:11px;font-variant-numeric:tabular-nums;line-height:1.55}
+.joiner-timeline{position:relative;height:14px;overflow:hidden;border:1px solid #e5e8dc;border-radius:999px;background:repeating-linear-gradient(135deg,#f2e5e0 0 6px,#faf4f0 6px 12px)}
+.joiner-timeline-kept{position:absolute;top:0;bottom:0;left:var(--start);width:max(3px,var(--size));border:1px solid #4e8e68;border-radius:999px;background:linear-gradient(90deg,#8ec998,#4c9b6a)}
+.joiner-segments{display:grid;gap:8px}
+.joiner-segment{display:grid;grid-template-columns:minmax(78px,.8fr) minmax(110px,1fr) minmax(110px,1fr) auto;align-items:end;gap:9px;padding:10px;border:1px solid #edf0e8;border-radius:10px;background:#fbfcf8}
+.joiner-segment-name{align-self:center;color:#37634b;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.joiner-segment label{display:grid;gap:5px;color:#52685a;font-size:10px;font-weight:700}
+.joiner-segment input{width:100%;min-height:36px;padding:6px 9px;border:1px solid #d6e0d5;border-radius:8px;background:#fff;color:#20392d;font:600 13px var(--sans);font-variant-numeric:tabular-nums}
+.joiner-segment input:focus-visible{outline:3px solid rgba(35,120,93,.2);border-color:#398666}
+.joiner-segment-preview{min-height:36px;padding:7px 12px;border:1px solid #cfe1d0;border-radius:8px;background:#f2f8ef;color:#28583f;font-size:11px;font-weight:750}
+.joiner-segment-preview:hover{background:#e7f3e5}
+.joiner-source-preview{display:grid;gap:8px;margin-top:14px;padding:12px;border:1px solid #dfe8dd;border-radius:12px;background:#f9fbf6}
+.joiner-source-preview[hidden]{display:none}
+.joiner-source-preview video{display:block;width:min(100%,720px);max-height:360px;border-radius:9px;background:#111}
+.joiner-source-preview p{margin:0;color:#52685a;font-size:11px;line-height:1.5}
+.joiner-review .video-result-note{margin-top:13px}
+@media(max-width:760px){.joiner-review-heading{display:grid}.joiner-review-badge{justify-self:start}.joiner-segment{grid-template-columns:1fr 1fr;gap:9px}.joiner-segment-name{grid-column:1/-1}.joiner-segment-preview{grid-column:1/-1}.joiner-source-preview video{max-height:240px}}
+@media(prefers-reduced-motion:reduce){.joiner-segment-preview{transition:none}}
+
+
