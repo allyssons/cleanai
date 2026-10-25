@@ -25,7 +25,7 @@
     analyzingButton: 'Analyzing…', creatingButton: 'Creating video…', loadingButton: 'Preparing…',
     up: 'Move up', down: 'Move down', remove: 'Remove', clip: 'Clip', cut: 'Cut', keeps: 'Keeps', starts: 'from', ends: 'to', full: 'No long silence above the selected limit was found; keeps the full clip.',
     removed: 'removed', noSpeech: 'No clear audio segment was found; keeps the full clip.',
-    removeSegment: 'Delete segment', segmentDeleted: 'Segment deleted. This clip will be skipped if no kept segments remain.',
+    cutSegment: 'Cut from video', segmentDeleted: 'Segment cut from the final video. Nearby edits cannot bring it back into the timeline.',
     emptyClip: 'No segments kept; this clip will be skipped in the final video.', noSegments: 'Keep at least one segment before creating the video.',
     selectionRequired: 'Add at least two clips to continue.', progress: 'Working locally in your browser. Processing time depends on your device and video length.'
   } : {
@@ -45,7 +45,7 @@
     analyzingButton: 'Analisando…', creatingButton: 'Criando vídeo…', loadingButton: 'Preparando…',
     up: 'Mover para cima', down: 'Mover para baixo', remove: 'Remover', clip: 'Clipe', cut: 'Corte', keeps: 'Mantém', starts: 'de', ends: 'a', full: 'Nenhuma pausa acima do limite escolhido foi encontrada; mantém o clipe inteiro.',
     removed: 'removidos', noSpeech: 'Não encontramos trechos claros com áudio; o clipe inteiro será mantido.',
-    removeSegment: 'Excluir trecho', segmentDeleted: 'Trecho excluído. Se nenhum trecho restar, este clipe será ignorado no vídeo final.',
+    cutSegment: 'Cortar trecho do vídeo', segmentDeleted: 'Trecho cortado do MP4 final. Ajustar os limites próximos não o recoloca na faixa.',
     emptyClip: 'Nenhum trecho mantido; este clipe será ignorado no vídeo final.', noSegments: 'Mantenha ao menos um trecho antes de criar o vídeo.',
     selectionRequired: 'Adicione pelo menos dois clipes para continuar.', progress: 'Processamento local no navegador. O tempo depende do aparelho e da duração dos vídeos.'
   };
@@ -80,6 +80,7 @@
   const sourcePreviewWrap = $('joinerSourcePreviewWrap');
   const sourceVideo = $('joinerSourceVideo');
   const sourceCaption = $('joinerSourceCaption');
+  const sourcePreviewClose = $('joinerSourcePreviewClose');
 
   let clips = [];
   let ffmpeg = null;
@@ -121,6 +122,7 @@
     sourceVideo.removeAttribute('src');
     sourceVideo.load();
     sourcePreviewWrap.hidden = true;
+    document.body.classList.remove('joiner-preview-active');
     createButton.disabled = true;
     if (outputUrl) {
       URL.revokeObjectURL(outputUrl);
@@ -446,6 +448,14 @@
       timeline.className = 'joiner-timeline';
       timeline.setAttribute('role', 'img');
       timeline.setAttribute('aria-label', isEnglish ? 'Green sections are kept; gaps are removed.' : 'Trechos verdes são mantidos; os espaços são removidos.');
+      (clip.excludedSegments || []).forEach((segment) => {
+        const cut = document.createElement('span');
+        cut.className = 'joiner-timeline-cut';
+        cut.setAttribute('aria-hidden', 'true');
+        cut.style.setProperty('--start', `${(segment.start / clip.info.duration) * 100}%`);
+        cut.style.setProperty('--size', `${((segment.end - segment.start) / clip.info.duration) * 100}%`);
+        timeline.append(cut);
+      });
       segments.forEach((segment) => {
         const kept = document.createElement('span');
         kept.className = 'joiner-timeline-kept';
@@ -466,7 +476,8 @@
         const startInput = document.createElement('input');
         startInput.type = 'number';
         startInput.inputMode = 'decimal';
-        startInput.min = String(segmentIndex ? segments[segmentIndex - 1].end : 0);
+        const segmentBounds = getSegmentBounds(clip, segmentIndex);
+        startInput.min = String(segmentBounds.lower);
         startInput.max = String(Math.max(segment.start, segment.end - 0.15));
         startInput.step = '0.05';
         startInput.value = segment.start.toFixed(2);
@@ -480,7 +491,7 @@
         endInput.type = 'number';
         endInput.inputMode = 'decimal';
         endInput.min = String(Math.min(clip.info.duration, segment.start + 0.15));
-        endInput.max = String(segmentIndex < segments.length - 1 ? segments[segmentIndex + 1].start : clip.info.duration);
+        endInput.max = String(segmentBounds.upper);
         endInput.step = '0.05';
         endInput.value = segment.end.toFixed(2);
         endInput.dataset.clipIndex = String(index);
@@ -496,10 +507,10 @@
         play.dataset.segmentIndex = String(segmentIndex);
         const remove = document.createElement('button');
         remove.type = 'button';
-        remove.className = 'quiet-button joiner-segment-remove';
-        remove.textContent = isEnglish ? 'Delete' : 'Excluir';
-        remove.setAttribute('aria-label', `${copy.removeSegment} ${segmentIndex + 1} ${isEnglish ? 'in' : 'do'} ${clip.file.name}`);
-        remove.dataset.action = 'remove-segment';
+        remove.className = 'quiet-button joiner-segment-cut';
+        remove.textContent = isEnglish ? 'Cut' : 'Cortar';
+        remove.setAttribute('aria-label', `${copy.cutSegment} ${segmentIndex + 1} ${isEnglish ? 'from' : 'do'} ${clip.file.name}`);
+        remove.dataset.action = 'cut-segment';
         remove.dataset.clipIndex = String(index);
         remove.dataset.segmentIndex = String(segmentIndex);
         row.append(segmentName, startLabel, endLabel, play, remove);
@@ -515,19 +526,32 @@
     createButton.disabled = !analysis.clips.some((clip) => clip.segments.length > 0);
   }
 
-  function removeSegment(button) {
+  function cutSegment(button) {
     const clip = analysis?.clips[Number(button.dataset.clipIndex)];
     const segmentIndex = Number(button.dataset.segmentIndex);
     if (!clip || !Number.isInteger(segmentIndex) || !clip.segments[segmentIndex] || running) return;
-    clip.segments.splice(segmentIndex, 1);
+    clip.excludedSegments ||= [];
+    const [excluded] = clip.segments.splice(segmentIndex, 1);
+    clip.excludedSegments.push(excluded);
+    clip.excludedSegments.sort((a, b) => a.start - b.start);
     clip.fallback = false;
     previewRequestId += 1;
     previewStopAt = null;
     sourceVideo.pause();
     sourcePreviewWrap.hidden = true;
+    document.body.classList.remove('joiner-preview-active');
     createCutsList();
     setWorking(false);
     setStatus(copy.segmentDeleted, clip.segments.length ? '' : 'warning');
+  }
+
+  function getSegmentBounds(clip, segmentIndex) {
+    const current = clip.segments[segmentIndex];
+    const others = clip.segments.filter((_, index) => index !== segmentIndex);
+    const cuts = clip.excludedSegments || [];
+    const lower = [...others.filter((range) => range.end <= current.start).map((range) => range.end), ...cuts.filter((range) => range.end <= current.start).map((range) => range.end), 0];
+    const upper = [...others.filter((range) => range.start >= current.end).map((range) => range.start), ...cuts.filter((range) => range.start >= current.end).map((range) => range.start), clip.info.duration];
+    return { lower: Math.max(...lower), upper: Math.min(...upper) };
   }
 
   function updateSegment(inputEl) {
@@ -540,8 +564,7 @@
     const endInput = cutsList.querySelector(`input[data-clip-index="${inputEl.dataset.clipIndex}"][data-segment-index="${segmentIndex}"][data-edge="end"]`);
     const start = Number(startInput.value);
     const end = Number(endInput.value);
-    const lowerBound = segmentIndex ? segments[segmentIndex - 1].end : 0;
-    const upperBound = segmentIndex < segments.length - 1 ? segments[segmentIndex + 1].start : clip.info.duration;
+    const { lower: lowerBound, upper: upperBound } = getSegmentBounds(clip, segmentIndex);
     if (!Number.isFinite(start) || !Number.isFinite(end) || start < lowerBound || end > upperBound || end - start < 0.15) {
       setStatus(isEnglish ? 'Use valid times, leave at least 0.15 seconds, and keep segments in order.' : 'Use tempos válidos, mantenha ao menos 0,15 segundo e não sobreponha os trechos.', 'warning');
       createCutsList();
@@ -560,6 +583,7 @@
     const requestId = ++previewRequestId;
     previewStopAt = segment.end;
     sourcePreviewWrap.hidden = false;
+    document.body.classList.add('joiner-preview-active');
     sourceCaption.textContent = isEnglish
       ? `Previewing ${clip.file.name} from ${formatSeconds(segment.start)} to ${formatSeconds(segment.end)}.`
       : `Prévia de ${clip.file.name}, de ${formatSeconds(segment.start)} a ${formatSeconds(segment.end)}.`;
@@ -608,6 +632,7 @@
         const silences = await detectSilences(clip, settings);
         const speech = speechRanges(silences, clip.info.duration, settings);
         clip.fallback = speech.length === 0;
+        clip.excludedSegments = [];
         clip.segments = keepSegments(speech, clip.info.duration, settings);
         const keptDuration = clip.segments.reduce((sum, segment) => sum + segment.end - segment.start, 0);
         if (keptDuration < 0.5) {
@@ -741,8 +766,15 @@
   cutsList.addEventListener('click', (event) => {
     const button = event.target.closest('button[data-segment-index]');
     if (!button) return;
-    if (button.dataset.action === 'remove-segment') removeSegment(button);
+    if (button.dataset.action === 'cut-segment') cutSegment(button);
     else previewSegment(button);
+  });
+  sourcePreviewClose.addEventListener('click', () => {
+    previewRequestId += 1;
+    previewStopAt = null;
+    sourceVideo.pause();
+    sourcePreviewWrap.hidden = true;
+    document.body.classList.remove('joiner-preview-active');
   });
   sourceVideo.addEventListener('timeupdate', () => {
     if (previewStopAt !== null && sourceVideo.currentTime >= previewStopAt) {
