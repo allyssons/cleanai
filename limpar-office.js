@@ -14,11 +14,11 @@
   const status = byId('officeStatus');
   const MAX_SIZE = 15 * 1024 * 1024;
   const commonFields = {
-    'docProps/core.xml': new Set(['creator','lastModifiedBy','title','subject','description','keywords','category','contentStatus','identifier','language','created','modified','lastPrinted','revision']),
+    'docProps/core.xml': new Set(['creator','lastModifiedBy','title','subject','description','keywords','category','contentStatus','identifier','language','created','modified','lastPrinted','revision'].map(name => name.toLowerCase())),
     'docProps/app.xml': new Set(['application','company','manager','template','appversion','hyperlinkbase'])
   };
-  const readableNames = isEnglish ? { creator:'Author', lastModifiedBy:'Last modified by', title:'Title', subject:'Subject', description:'Description', keywords:'Keywords', category:'Category', contentStatus:'Status', identifier:'Identifier', language:'Language', created:'Creation date', modified:'Modified date', lastPrinted:'Last printed', revision:'Revision number', application:'Application', company:'Company', manager:'Manager', template:'Template', appversion:'Application version', hyperlinkbase:'Hyperlink base', custom:'Custom properties' } : {
-    creator:'Autor', lastModifiedBy:'Última pessoa que editou', title:'Título', subject:'Assunto',
+  const readableNames = isEnglish ? { creator:'Author', lastmodifiedby:'Last modified by', title:'Title', subject:'Subject', description:'Description', keywords:'Keywords', category:'Category', contentStatus:'Status', identifier:'Identifier', language:'Language', created:'Creation date', modified:'Modified date', lastPrinted:'Last printed', revision:'Revision number', application:'Application', company:'Company', manager:'Manager', template:'Template', appversion:'Application version', hyperlinkbase:'Hyperlink base', custom:'Custom properties' } : {
+    creator:'Autor', lastmodifiedby:'Última pessoa que editou', title:'Título', subject:'Assunto',
     description:'Descrição', keywords:'Palavras-chave', category:'Categoria', contentStatus:'Status',
     identifier:'Identificador', language:'Idioma', created:'Data de criação', modified:'Data de alteração',
     lastPrinted:'Última impressão', revision:'Número de revisão', application:'Aplicativo',
