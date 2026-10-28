@@ -153,3 +153,7 @@
 @media(prefers-reduced-motion:reduce){.joiner-segment-preview{transition:none}}
 
 
+
+
+/* Original visual examples for tool pages */
+.example-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,1.05fr);gap:2rem;align-items:center;margin:2rem 0;padding:clamp(1.25rem,3vw,2rem);border:1px solid #dfe8dc;border-radius:1.25rem;background:linear-gradient(135deg,#f5f8ef,#fff)}.example-copy h2{margin:.35rem 0 .7rem}.example-copy p{line-height:1.65}.timeline-demo{margin:0;padding:1rem;background:#fff;border-radius:1rem;border:1px solid #e5e9e1}.timeline-demo svg{display:block;width:100%;height:auto}.timeline-demo figcaption{margin-top:.5rem;color:#667064;font-size:.82rem}.metadata-demo{display:grid;grid-template-columns:1fr auto 1fr;gap:.75rem;align-items:start;padding:1.1rem;background:#fff;border:1px solid #e5e9e1;border-radius:1rem}.metadata-demo h3{font-size:1rem;margin:.2rem 0 .65rem}.metadata-demo ul{padding-left:1.1rem;line-height:1.7}.metadata-demo p{grid-column:1/-1;color:#667064;font-size:.82rem;margin:.25rem 0 0}.metadata-arrow{align-self:center;color:#56775a;font-size:1.4rem}@media(max-width:720px){.example-panel{grid-template-columns:1fr}.metadata-demo{gap:.4rem;padding:.8rem}.metadata-demo ul{font-size:.88rem}}
