@@ -38,7 +38,9 @@
     return pdfLibraryPromise;
   }
 
-  const labels = isEnglish ? [\n    ['Title', doc => doc.getTitle()], ['Author', doc => doc.getAuthor()], ['Subject', doc => doc.getSubject()], ['Keywords', doc => doc.getKeywords()], ['Creator application', doc => doc.getCreator()], ['PDF producer', doc => doc.getProducer()], ['Creation date', doc => doc.getCreationDate()], ['Modified date', doc => doc.getModificationDate()]\n  ] : [
+  const labels = isEnglish ? [
+    ['Title', doc => doc.getTitle()], ['Author', doc => doc.getAuthor()], ['Subject', doc => doc.getSubject()], ['Keywords', doc => doc.getKeywords()], ['Creator application', doc => doc.getCreator()], ['PDF producer', doc => doc.getProducer()], ['Creation date', doc => doc.getCreationDate()], ['Modified date', doc => doc.getModificationDate()]
+  ] : [
     ['Título', doc => doc.getTitle()],
     ['Autor', doc => doc.getAuthor()],
     ['Assunto', doc => doc.getSubject()],
