@@ -1,4 +1,5 @@
 (() => {
+  const isEnglish = document.documentElement.lang === 'en';
   const byId = id => document.getElementById(id);
   const input = byId('officeFile');
   const choose = byId('officeChoose');
@@ -16,7 +17,7 @@
     'docProps/core.xml': new Set(['creator','lastModifiedBy','title','subject','description','keywords','category','contentStatus','identifier','language','created','modified','lastPrinted','revision']),
     'docProps/app.xml': new Set(['application','company','manager','template','appversion','hyperlinkbase'])
   };
-  const readableNames = {
+  const readableNames = isEnglish ? { creator:'Author', lastModifiedBy:'Last modified by', title:'Title', subject:'Subject', description:'Description', keywords:'Keywords', category:'Category', contentStatus:'Status', identifier:'Identifier', language:'Language', created:'Creation date', modified:'Modified date', lastPrinted:'Last printed', revision:'Revision number', application:'Application', company:'Company', manager:'Manager', template:'Template', appversion:'Application version', hyperlinkbase:'Hyperlink base', custom:'Custom properties' } : {
     creator:'Autor', lastModifiedBy:'Última pessoa que editou', title:'Título', subject:'Assunto',
     description:'Descrição', keywords:'Palavras-chave', category:'Categoria', contentStatus:'Status',
     identifier:'Identificador', language:'Idioma', created:'Data de criação', modified:'Data de alteração',
@@ -50,7 +51,16 @@
   }
 
   const formatBytes = bytes => bytes < 1048576 ? Math.max(1, Math.round(bytes / 1024)) + ' KB' : (bytes / 1048576).toFixed(1) + ' MB';
-  const say = (message, state = '') => { status.textContent = message; status.dataset.state = state; };
+  const messages = {"Escolha um PDF para começar.":"Choose a PDF to get started.","Escolha um arquivo PDF válido.":"Choose a valid PDF file.","Este arquivo passa do limite de 30 MB. Tente uma cópia menor.":"This file exceeds the 30 MB limit. Try a smaller copy.","Arquivo selecionado. Analise os campos comuns antes de criar a cópia.":"File selected. Review common fields before creating a copy.","Carregando a ferramenta de PDF pela primeira vez…":"Loading the PDF tool for the first time…","Lendo os campos de metadados localmente…":"Reading metadata fields locally…","Nenhum campo comum preenchido foi encontrado":"No populated common fields were found","Não foi possível ler este PDF. Arquivos protegidos por senha, danificados ou com estruturas não compatíveis não podem ser processados.":"This PDF could not be read. Password-protected, damaged, or incompatible files cannot be processed.","A biblioteca de PDF não carregou. Confira sua conexão e tente novamente.":"The PDF library could not load. Check your connection and try again.","Criando uma cópia limpa no seu navegador…":"Creating a cleaned copy in your browser…","Cópia criada e baixada. ":"Cleaned copy created and downloaded. "," entrada(s) comum(ns) de metadados foram removidas; o original ficou intacto.":" common metadata entries were removed; your original is unchanged.","Não foi possível gerar esta cópia. O arquivo original permanece intacto; tente outro PDF sem senha.":"Could not create this copy. Your original is unchanged; try another PDF without a password.","A biblioteca de PDF não carregou. O arquivo original permanece intacto; confira sua conexão e tente novamente.":"The PDF library could not load. Your original is unchanged; check your connection and try again.","Cole um ou mais links para começar.":"Paste one or more links to get started.","Exemplo carregado. Revise-o e clique em limpar.":"Example loaded. Review it, then click Clean."," não parece uma URL válida e foi mantida":" is not a valid URL and was kept"," não usa HTTP ou HTTPS e foi mantida":" does not use HTTP or HTTPS and was kept"," contém credenciais no endereço e foi mantida para revisão manual":" contains credentials and was kept for manual review","Links limpos copiados para a área de transferência.":"Cleaned links copied to the clipboard.","Não foi possível copiar automaticamente. O resultado está selecionado para cópia manual.":"Could not copy automatically. The result is selected for manual copying.","Escolha um documento Office para começar.":"Choose an Office document to get started.","xml":"xml","Escolha um arquivo .docx, .xlsx ou .pptx. Formatos com macros e arquivos antigos não são aceitos.":"Choose a .docx, .xlsx, or .pptx file. Macro-enabled and older formats are not supported.","Este documento passa do limite de 15 MB. Tente uma cópia menor.":"This document exceeds the 15 MB limit. Try a smaller copy.","Arquivo selecionado. Analise os campos de propriedades que esta ferramenta reconhece.":"File selected. Review the property fields this tool recognizes.","Carregando a ferramenta de documentos pela primeira vez…":"Loading the document tool for the first time…","Lendo as propriedades localmente no navegador…":"Reading properties locally in your browser…","Este arquivo parece ter uma assinatura digital. Não vamos regravá-lo para evitar invalidar a assinatura.":"This file appears to have a digital signature. It will not be rewritten to avoid invalidating the signature.","Nenhuma propriedade comum preenchida foi encontrada":"No populated common properties were found","Não foi possível abrir este documento. Ele pode estar danificado, protegido ou usar uma estrutura incompatível.":"Could not open this document. It may be damaged, protected, or use an incompatible structure.","A biblioteca de documentos não carregou. Confira sua conexão e tente novamente.":"The document library could not load. Check your connection and try again.","Limpando propriedades e criando uma cópia no seu navegador…":"Cleaning properties and creating a copy in your browser…"," campo(s) de propriedades reconhecidas foram limpos; o original ficou intacto.":" recognized property fields were cleared; your original is unchanged.","Não foi possível gerar esta cópia. O original permanece intacto; tente outro documento compatível.":"Could not create this copy. Your original is unchanged; try another compatible document."};
+  const translate = message => {
+    if (!isEnglish) return message;
+    if (messages[message]) return messages[message];
+    if (message.startsWith('Não encontramos propriedades comuns preenchidas;')) return 'No populated common properties were found; you can still create a rewritten copy.';
+    if (message.startsWith('Cópia criada e baixada. ')) return 'Cleaned copy created and downloaded. ' + message.substring('Cópia criada e baixada. '.length).replace(' campo(s) de propriedades reconhecidas foram limpos; o original ficou intacto.', ' recognized property fields were cleared; your original is unchanged.');
+    if (message.includes('campo(s) com valor foram encontrados.')) { const n = Number(message.split(' ')[0]); return n + (n === 1 ? ' populated property found. Values are not shown.' : ' populated properties found. Values are not shown.'); }
+    return message;
+  };
+  const say = (message, state = '') => { status.textContent = translate(message); status.dataset.state = state; };
   const setBusy = value => {
     isBusy = value;
     choose.disabled = value;
@@ -104,7 +114,7 @@
     }
     currentFile = file;
     fileName.textContent = file.name;
-    fileSize.textContent = formatBytes(file.size) + ' · limite de 15 MB';
+    fileSize.textContent = formatBytes(file.size) + (isEnglish ? ' · 15 MB limit' : ' · limite de 15 MB');
     selected.classList.remove('utility-hidden');
     setBusy(false);
     say('Arquivo selecionado. Analise os campos de propriedades que esta ferramenta reconhece.');
@@ -188,7 +198,7 @@
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = currentFile.name.replace(/\.(docx|xlsx|pptx)$/i, '') + '-metadados-limpos.' + currentFile.name.split('.').pop().toLowerCase();
+      link.download = currentFile.name.replace(/\.(docx|xlsx|pptx)$/i, '') + (isEnglish ? '-metadata-cleaned.' : '-metadados-limpos.') + currentFile.name.split('.').pop().toLowerCase();
       window.higienizadorTrack?.('tool_clean_completed', { tool: 'office' });
       window.higienizadorTrack?.('tool_result_downloaded', { tool: 'office' });
       document.body.append(link);
